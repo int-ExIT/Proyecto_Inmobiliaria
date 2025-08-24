@@ -97,3 +97,4 @@ C:\Users\Nacho\Documents\GitHub\Proyecto_Inmobiliaria\Inmobiliaria\obj\Debug\net
 C:\Users\Nacho\Documents\GitHub\Proyecto_Inmobiliaria\Inmobiliaria\bin\Debug\net9.0\MySqlConnector.dll
 C:\Users\Nacho\Documents\GitHub\Proyecto_Inmobiliaria\Inmobiliaria\obj\Debug\net9.0\Inmobiliaria.csproj.AssemblyReference.cache
 C:\Users\Nacho\Documents\GitHub\Proyecto_Inmobiliaria\Inmobiliaria\obj\Debug\net9.0\Inmobili.2D736105.Up2Date
+C:\Users\Nacho\Documents\GitHub\Proyecto_Inmobiliaria\Inmobiliaria\obj\Debug\net9.0\Inmobiliaria.sourcelink.json

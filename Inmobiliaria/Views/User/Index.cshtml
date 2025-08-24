@@ -1,0 +1,74 @@
+@model IEnumerable<Inmobiliaria.Models.User>
+@{
+  ViewData["Title"] = "Propietarios";
+  ViewData["Subtitle"] = " Usuarios";
+}
+
+<div class="container-fluid text-center d-grid gap-4">
+  @* Titulo *@
+  <div>
+    <h1>Bienvenido a Propietarios</h1>
+  </div>
+  @* Formulario *@
+  <div class="bg-dark container-fluid p-3">
+    <form action="">
+      <select name="filter" id="filter">
+        <option value="dni">DNI</option>
+        <option value="name" selected>Nombre</option>
+        <option value="last_name">Apellido</option>
+        <option value="contact">Contacto</option>
+        <option value="mail">Email</option>
+      </select>
+      <input type="text" name="name">
+    </form>
+  </div>
+  @* Tabla *@
+  <div class="bg-dark text-white container-fluid d-flex justify-content-center pt-3">
+    <table class="table table-striped table-hover table-bordered text-start">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>DNI</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Contacto</th>
+          <th>Mail</th> @* Probar de hacer colspan="3" en este punto *@
+          <th colspan="2"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (Model?.Any() == true)
+        {
+          @foreach (var User in Model)
+          {
+            <tr>
+              <td>@User.Id</td>
+              <td>@User.Dni</td>
+              <td>@User.Name</td>
+              <td>@User.LastName</td>
+              <td>@User.Contact</td>
+              <td>@User.Mail</td>
+              <td class="text-center">
+                <button class="bg-success text-white">Modificar</button>
+              </td>
+              <td class="text-center">
+                <button class="bg-danger text-white">Dar de Baja</button>
+              </td>
+            </tr>
+          }
+        }
+        else
+        {
+          <tr>
+            <td colspan="8">No se encontraron resultados...</td>
+          </tr>
+        }
+      </tbody>
+      <tfoot>
+        <tr>
+          <td class="text-center" colspan="8">Esto es el footer...</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>

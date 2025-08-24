@@ -1,8 +1,10 @@
 ﻿@{
   ViewData["Title"] = "Pagina Principal";
+  ViewData["Subtitle"] = " Inmobiliaria";
 }
 
 <div class="text-center">
-  <h1 class="display-4 my-4">Bienvenido:)</h1>
-  <h3>Prueba el ABM de <a asp-area="" asp-controller="Propietario" asp-action="Propietario">Propietario</a> e <a asp-area="" asp-controller="Inquilino" asp-action="Inquilino">Inquilino</a> aqui.</h3>
+  <h1 class="display-4 my-5">Bienvenido:)</h1>
+  <h3 class="my-5">Prueba el ABM de <a asp-controller="User" asp-action="Index" asp-route-rol="inquilino">Inquilino</a> y <a asp-controller="User" asp-action="Index" asp-route-rol="propietario">Propietario</a> aqui.</h3>
+  <h5 class="my-3">Oh! Y tambien puede ver el repositorio de este proyecto<br>haciendo click en el enlace anclado en el footer ;).</h5>
 </div>

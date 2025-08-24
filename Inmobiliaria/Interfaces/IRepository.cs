@@ -2,7 +2,7 @@ using System;
 
 namespace Inmobiliaria.Interfaces;
 
-interface IRepository<T>
+public interface IRepository<T>
 {
   int Create(T Element);
 
