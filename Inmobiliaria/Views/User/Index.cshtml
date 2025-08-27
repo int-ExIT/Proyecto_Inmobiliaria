@@ -5,13 +5,19 @@
 }
 
 <div class="container-fluid text-center d-grid gap-4">
+  @* Modal de edicion de datos *@
+  @await Html.PartialAsync("_EditModal", new Inmobiliaria.Models.ViewModels.UserEditVm())
+  @* Modal de edicion de estado *@
+  @await Html.PartialAsync("_EditStateModal")
+
   @* Titulo *@
   <div>
     <h1>Bienvenido a Propietarios</h1>
   </div>
   @* Formulario *@
-  <div class="bg-dark container-fluid p-3">
+  <div class="bg-dark container-fluid p-3 text-white">
     <form action="">
+      <label for="filter">Filtrar por: </label>
       <select name="filter" id="filter">
         <option value="dni">DNI</option>
         <option value="name" selected>Nombre</option>
@@ -19,7 +25,7 @@
         <option value="contact">Contacto</option>
         <option value="mail">Email</option>
       </select>
-      <input type="text" name="name">
+      <input type="text" name="filter">
     </form>
   </div>
   @* Tabla *@
@@ -32,7 +38,7 @@
           <th>Nombre</th>
           <th>Apellido</th>
           <th>Contacto</th>
-          <th>Mail</th> @* Probar de hacer colspan="3" en este punto *@
+          <th>Mail</th>
           <th colspan="2"></th>
         </tr>
       </thead>
@@ -41,18 +47,25 @@
         {
           @foreach (var User in Model)
           {
-            <tr>
-              <td>@User.Id</td>
-              <td>@User.Dni</td>
-              <td>@User.Name</td>
-              <td>@User.LastName</td>
-              <td>@User.Contact</td>
-              <td>@User.Mail</td>
+            <tr data-dni="@User.Dni">
+              <td class="col-id">@User.Id</td>
+              <td class="col-dni">@User.Dni</td>
+              <td class="col-name">@User.Name</td>
+              <td class="col-lastname">@User.LastName</td>
+              <td class="col-contact">@User.Contact</td>
+              <td class="col-mail">@User.Mail</td>
               <td class="text-center">
-                <button class="bg-success text-white">Modificar</button>
+                <button class="btn btn-sm bg-success text-white" data-bs-toggle="modal" data-bs-target="#editModal"
+                  data-dni="@User.Dni" data-name="@User.Name" data-lastname="@User.LastName" data-mail="@User.Mail"
+                  data-contact="@User.Contact" data-rol="@User.Rol">
+                  Editar
+                </button>
               </td>
               <td class="text-center">
-                <button class="bg-danger text-white">Dar de Baja</button>
+                <button class="btn-state btn btn-sm bg-danger text-white" data-bs-toggle="modal"
+                  data-bs-target="#editStateModal" data-dni="@User.Dni">
+                  Dar de @((User.State) ? "baja" : "alta")
+                </button>
               </td>
             </tr>
           }
@@ -72,3 +85,128 @@
     </table>
   </div>
 </div>
+
+@section Scripts
+{
+  @await Html.PartialAsync("_ValidationsScriptsPartial")
+
+  <script type="module">
+    const $modal_edit = document.querySelector('#editModal');
+    const $modal_state = document.querySelector('#editStateModal');
+    const $btn_confirm = document.querySelector('#confirm-state');
+    const $form_edit = document.querySelector('#edit-form');
+
+    $modal_edit.addEventListener('show.bs.modal', async evt => {
+      $modal_edit.querySelectorAll('input').forEach($input => {
+        if ($input.name !== '__RequestVerificationToken') $input.value = "";
+      });
+
+      const $btn_edit = evt.relatedTarget;
+      const dni = $btn_edit.getAttribute('data-dni');
+
+      try {
+        const response = await fetch(`/User/GetUser?Dni=${dni}`);
+
+        if (!response.ok) throw new Error('No se pudo recuperar al usuario');
+
+        const user = await response.json();
+
+        // Agregar datos al form:
+        $modal_edit.querySelector('input[name="Dni"]').value = user.dni;
+        $modal_edit.querySelector('input[name="Name"]').value = user.name;
+        $modal_edit.querySelector('input[name="LastName"]').value = user.lastName;
+        $modal_edit.querySelector('input[name="Mail"]').value = user.mail;
+        $modal_edit.querySelector('input[name="Contact"]').value = user.contact;
+        $modal_edit.querySelector('input[name="Rol"]').value = user.rol;
+      } catch (err) {
+        console.error('Failed recovery ' + err.message);
+
+        bootstrap.Modal.getInstance($modal_edit)?.hide();
+
+        alert('Failed recovery.');
+      }
+    });
+
+    $form_edit.addEventListener('submit', async evt => {
+      evt.preventDefault();
+
+      const formData = new FormData($form_edit);
+
+      try {
+        const response = await fetch('/User/EditUser', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) throw new Error('Failed update');
+
+        const { user } = await response.json();
+        const $row_edit = document.querySelector(`tr[data-dni="${user.dni}"]`);
+
+        $row_edit.querySelector('.col-name').textContent = user.name;
+        $row_edit.querySelector('.col-lastname').textContent = user.lastName;
+        $row_edit.querySelector('.col-contact').textContent = user.contact;
+        $row_edit.querySelector('.col-mail').textContent = user.mail;
+
+        console.log('Successful update');
+
+        bootstrap.Modal.getInstance($modal_edit).hide();
+      } catch (err) {
+        console.error('Failed update ' + err);
+        alert('Failed update');
+      }
+    });
+
+    $modal_state.addEventListener('show.bs.modal', async evt => {
+      const $btn_state = evt.relatedTarget;
+      const $h3 = $modal_state.querySelector('h3');
+      const dni = $btn_state.getAttribute('data-dni');
+
+      try {
+        const response = await fetch(`/User/GetUser?Dni=${dni}`);
+
+        if (!response.ok) throw new Error('Failed selection');
+
+        const user = await response.json();
+
+        $modal_state.dataset.userDni = dni;
+        $h3.textContent = `Esta por dar de ${(user.state) ? 'baja' : 'alta'} al usuario ${user.name} ${user.lastName}.`;
+      } catch (err) {
+        console.error('Failed recovery ' + err.message);
+
+        bootstrap.Modal.getInstance($modal_state)?.hide();
+
+        alert('Failed recovery.');
+      }
+    });
+
+    $btn_confirm.addEventListener('click', async evt => {
+      const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+      const dni = $modal_state.dataset.userDni;
+
+      try {
+        const response = await fetch(`/User/EditState?Dni=${dni}`, {
+          method: 'POST',
+          headers: {
+            'RequestVerificationToken': token
+          }
+        });
+
+        if (!response.ok) throw new Error('Response 404');
+
+        const { state } = await response.json();
+        const $row_edit = document.querySelector(`tr[data-dni="${dni}"]`);
+        const $btn_state = $row_edit.querySelector('.btn-state');
+
+        $btn_state.textContent = `Dar de ${(state ? 'alta' : 'baja')}`;
+
+        console.log('Successful update');
+
+        bootstrap.Modal.getInstance($modal_state).hide();
+      } catch (err) {
+        console.error('Failed update ' + err.message);
+        alert('Failed update');
+      }
+    });
+  </script>
+}

@@ -191,8 +191,8 @@ public class GenericRepository<T> : IRepository<T>
       // Establecer conexion
       ConnectionManager(true);
 
-      /// Verifico que posea un atributo de tipo "unique" de prioridad 0 o 1, y de existir lo aislo  
-      /// para aislarlo y utilizarlo como condicion para setear los datos
+      /// Verifico que posea un atributo de tipo "unique" de prioridad 0 o 1, y de existir 
+      /// lo aislo para utilizarlo como condicion para setear los datos
       (string Attr, object? Value) = this.PropsUnique!
         .Where(Prop => (Prop.Value == 0 || Prop.Value == 1) && NewData.ContainsKey(Prop.Name))
         .Select(Prop => (Prop.Name, NewData.GetValueOrDefault(Prop.Name)))
