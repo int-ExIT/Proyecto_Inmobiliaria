@@ -5,32 +5,32 @@
   al principio del nombre.    
 *@
 
-@model Inmobiliaria.Models.ViewModels.UserEditVm
+@model Inmobiliaria.Models.ViewModels.InquilinoEditVm
 
 <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Editar Usuario</h5>
+        <h5 class="modal-title">Editar Propietario</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
 
       <div class="modal-body text-start bg-dark text-white">
-        <form asp-action="Edit" asp-controller="User" method="POST" id="edit-form">
+        <form asp-action="Edit" asp-controller="Inquilino" method="POST" id="edit-form">
           @Html.AntiForgeryToken()
 
           <input type="hidden" asp-for="Dni" />
 
           <div class="mb-3">
-            <label asp-for="Name" class="form-label"></label>
-            <input asp-for="Name" class="form-control" />
-            <span asp-validation-for="Name" class="text-danger"></span>
+            <label asp-for="Nombre" class="form-label"></label>
+            <input asp-for="Nombre" class="form-control" />
+            <span asp-validation-for="Nombre" class="text-danger"></span>
           </div>
 
           <div class="mb-3">
-            <label asp-for="LastName" class="form-label"></label>
-            <input asp-for="LastName" class="form-control" />
-            <span asp-validation-for="LastName" class="text-danger"></span>
+            <label asp-for="Apellido" class="form-label"></label>
+            <input asp-for="Apellido" class="form-control" />
+            <span asp-validation-for="Apellido" class="text-danger"></span>
           </div>
 
           <div class="mb-3">
@@ -40,13 +40,8 @@
           </div>
 
           <div class="mb-3">
-            <label asp-for="Contact" class="form-label"></label>
-            <input asp-for="Contact" class="form-control" />
-          </div>
-
-          <div class="mb-3">
-            <label asp-for="Rol" class="form-label"></label>
-            <input asp-for="Rol" class="form-control" readonly />
+            <label asp-for="Contacto" class="form-label"></label>
+            <input asp-for="Contacto" class="form-control" />
           </div>
 
           <div class="modal-footer">

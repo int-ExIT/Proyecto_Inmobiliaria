@@ -8,12 +8,12 @@ using System.ComponentModel.DataAnnotations;
 ///  Recomendada para proyectos medianos/grandes. 
 namespace Inmobiliaria.Models.ViewModels;
 
-public class UserEditVm
+public class UsuarioEditVm
 {
   [Required] public int Dni { get; set; }
-  [Required, StringLength(100)] public string Name { get; set; } = "";
-  [Required, StringLength(50)] public string LastName { get; set; } = "";
-  [Required] public long Contact { get; set; }
+  [Required, StringLength(100)] public string Nombre { get; set; } = "";
+  [Required, StringLength(50)] public string Apellido { get; set; } = "";
+  [Required] public long Contacto { get; set; }
   [Required, EmailAddress] public string Mail { get; set; } = "";
-  [Required, StringLength(50)] public string Rol { get; set; } = "propietario";
+  [Required, StringLength(50)] public string Rol { get; set; } = "empleado";
 }

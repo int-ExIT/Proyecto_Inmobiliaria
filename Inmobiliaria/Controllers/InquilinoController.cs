@@ -8,76 +8,72 @@ using Inmobiliaria.Models.ViewModels;
 
 namespace Inmobiliaria.Controllers;
 
-public class UserController(IRepository<User> Repository) : Controller
+public class InquilinoController(IRepository<Inquilino> Repository) : Controller
 {
-  private readonly IRepository<User> _userRepository = Repository;
+  private readonly IRepository<Inquilino> _userRepository = Repository;
 
   [HttpGet]
-  public IActionResult Index(string Rol)
+  public IActionResult Index()
   {
-    var users = _userRepository.FindBy(new Dictionary<string, object>() {
-      { "rol", Rol },
-      // { "state", 1 }
-    });
+    var elements = _userRepository.ReadAll();
 
-    return View(users);
+    return View(elements);
   }
 
   [HttpGet] // VER COMO MANEJAR EL TEMA DE LA MULTI INSTANCIA DE LOS CONTROLADORES
   public IActionResult GetUser(int Dni)
   {
-    User? user = _userRepository.ReadOne(("dni", Dni)).Entity;
+    var element = _userRepository.ReadOne(("dni", Dni)).Entity;
 
-    if (user == null) return NotFound();
+    if (element == null) return NotFound();
 
-    return Json(user);
+    return Json(new { Success = true, Body = element });
   }
 
   // Esta accion recolecta los datos de la modal y los usa para la actualizacion
   [HttpPost] /* Indica que tal metodo responde a una solicitud POST */
   [ValidateAntiForgeryToken] /* Para evitar ataques CSRF (Corss-Site Request Forgery) */
-  public IActionResult EditUser(UserEditVm vm)  /* Cubre peticiones POST */
+  public IActionResult EditUser(UsuarioEditVm vm) /* Cubre peticiones POST */
   {
     // "ModelState.IsValid" cheque que todos los campos requeridos cumplan sus respectivas condiciones
     // "BadRequest" devuelve un 404 con body 
     if (!ModelState.IsValid) return BadRequest(ModelState);
 
-    User? user = _userRepository.ReadOne(("dni", vm.Dni)).Entity;
+    var element = _userRepository.ReadOne(("dni", vm.Dni)).Entity;
 
     // "NotFound" devuelve un 404 son body 
-    if (user == null) return NotFound(new { Success = false, Message = "Usuario no encontrado" });
+    if (element == null) return NotFound(new { Success = false, Message = "Inquilino no encontrado." });
 
     Dictionary<string, object> newData = new()
     {
       { "dni", vm.Dni },
-      { "name", vm.Name },
-      { "last_name", vm.LastName },
-      { "contact", vm.Contact },
+      { "nombre", vm.Nombre },
+      { "apellido", vm.Apellido },
+      { "contacto", vm.Contacto },
       { "mail", vm.Mail },
-      { "rol", vm.Rol }
     };
     int affectedRows = _userRepository.Update(newData);
-    // Console.WriteLine($"Rows affected: {affectedRows}");
+    Console.WriteLine($"Rows affected: {affectedRows}");
 
-    return Ok(new { Success = true, User = vm });
+    return Ok(new { Success = true, Body = vm });
   }
 
   [HttpPost]
   [ValidateAntiForgeryToken]
   public IActionResult EditState(int Dni)
   {
-    User? user = _userRepository.ReadOne(("dni", Dni)).Entity;
+    var element = _userRepository.ReadOne(("dni", Dni)).Entity;
 
-    if (user == null) return NotFound(new { Success = false, Message = "Usuario no encontrado" });
+    if (element == null) return NotFound(new { Success = false, Message = "Inquilino no encontrado." });
 
     Dictionary<string, object> newData = new()
     {
-      { "state", !user.State },
+      { "estado", !element.Estado },
       { "dni", Dni }
     };
     int affectedRows = _userRepository.Update(newData);
-    // Console.WriteLine($"Rows affected: {affectedRows}");
+    Console.WriteLine($"Rows affected: {affectedRows}");
 
-    return Ok(new { Success = true, State = user.State });
+    return Ok(new { Success = true, State = element.Estado });
   }
 }

@@ -1,4 +1,4 @@
-@model IEnumerable<Inmobiliaria.Models.User>
+@model IEnumerable<Inmobiliaria.Models.Propietario>
 @{
   ViewData["Title"] = "Propietarios";
   ViewData["Subtitle"] = " Usuarios";
@@ -6,7 +6,7 @@
 
 <div class="container-fluid text-center d-grid gap-4">
   @* Modal de edicion de datos *@
-  @await Html.PartialAsync("_EditModal", new Inmobiliaria.Models.ViewModels.UserEditVm())
+  @await Html.PartialAsync("_EditModal", new Inmobiliaria.Models.ViewModels.PropietarioEditVm())
   @* Modal de edicion de estado *@
   @await Html.PartialAsync("_EditStateModal")
 
@@ -20,9 +20,9 @@
       <label for="filter">Filtrar por: </label>
       <select name="filter" id="filter">
         <option value="dni">DNI</option>
-        <option value="name" selected>Nombre</option>
-        <option value="last_name">Apellido</option>
-        <option value="contact">Contacto</option>
+        <option value="nombre" selected>Nombre</option>
+        <option value="apellido">Apellido</option>
+        <option value="contacto">Contacto</option>
         <option value="mail">Email</option>
       </select>
       <input type="text" name="filter">
@@ -50,21 +50,21 @@
             <tr data-dni="@User.Dni">
               <td class="col-id">@User.Id</td>
               <td class="col-dni">@User.Dni</td>
-              <td class="col-name">@User.Name</td>
-              <td class="col-lastname">@User.LastName</td>
-              <td class="col-contact">@User.Contact</td>
+              <td class="col-nombre">@User.Nombre</td>
+              <td class="col-apellido">@User.Apellido</td>
+              <td class="col-contacto">@User.Contacto</td>
               <td class="col-mail">@User.Mail</td>
               <td class="text-center">
                 <button class="btn btn-sm bg-success text-white" data-bs-toggle="modal" data-bs-target="#editModal"
-                  data-dni="@User.Dni" data-name="@User.Name" data-lastname="@User.LastName" data-mail="@User.Mail"
-                  data-contact="@User.Contact" data-rol="@User.Rol">
+                  data-dni="@User.Dni" data-nombre="@User.Nombre" data-apellido="@User.Apellido" data-mail="@User.Mail"
+                  data-contacto="@User.Contacto">
                   Editar
                 </button>
               </td>
               <td class="text-center">
                 <button class="btn-state btn btn-sm bg-danger text-white" data-bs-toggle="modal"
                   data-bs-target="#editStateModal" data-dni="@User.Dni">
-                  Dar de @((User.State) ? "baja" : "alta")
+                  Dar de @((User.Estado) ? "baja" : "alta")
                 </button>
               </td>
             </tr>
@@ -105,19 +105,18 @@
       const dni = $btn_edit.getAttribute('data-dni');
 
       try {
-        const response = await fetch(`/User/GetUser?Dni=${dni}`);
+        const response = await fetch(`/Propietario/GetUser?Dni=${dni}`);
 
         if (!response.ok) throw new Error('No se pudo recuperar al usuario');
 
-        const user = await response.json();
+        const { body } = await response.json();
 
         // Agregar datos al form:
-        $modal_edit.querySelector('input[name="Dni"]').value = user.dni;
-        $modal_edit.querySelector('input[name="Name"]').value = user.name;
-        $modal_edit.querySelector('input[name="LastName"]').value = user.lastName;
-        $modal_edit.querySelector('input[name="Mail"]').value = user.mail;
-        $modal_edit.querySelector('input[name="Contact"]').value = user.contact;
-        $modal_edit.querySelector('input[name="Rol"]').value = user.rol;
+        $modal_edit.querySelector('input[name="Dni"]').value = body.dni;
+        $modal_edit.querySelector('input[name="Nombre"]').value = body.nombre;
+        $modal_edit.querySelector('input[name="Apellido"]').value = body.apellido;
+        $modal_edit.querySelector('input[name="Mail"]').value = body.mail;
+        $modal_edit.querySelector('input[name="Contacto"]').value = body.contacto;
       } catch (err) {
         console.error('Failed recovery ' + err.message);
 
@@ -133,20 +132,20 @@
       const formData = new FormData($form_edit);
 
       try {
-        const response = await fetch('/User/EditUser', {
+        const response = await fetch('/Propietario/EditUser', {
           method: 'POST',
           body: formData
         });
 
         if (!response.ok) throw new Error('Failed update');
 
-        const { user } = await response.json();
-        const $row_edit = document.querySelector(`tr[data-dni="${user.dni}"]`);
+        const { body } = await response.json();
+        const $row_edit = document.querySelector(`tr[data-dni="${body.dni}"]`);
 
-        $row_edit.querySelector('.col-name').textContent = user.name;
-        $row_edit.querySelector('.col-lastname').textContent = user.lastName;
-        $row_edit.querySelector('.col-contact').textContent = user.contact;
-        $row_edit.querySelector('.col-mail').textContent = user.mail;
+        $row_edit.querySelector('.col-nombre').textContent = body.nombre;
+        $row_edit.querySelector('.col-apellido').textContent = body.apellido;
+        $row_edit.querySelector('.col-contacto').textContent = body.contacto;
+        $row_edit.querySelector('.col-mail').textContent = body.mail;
 
         console.log('Successful update');
 
@@ -163,14 +162,14 @@
       const dni = $btn_state.getAttribute('data-dni');
 
       try {
-        const response = await fetch(`/User/GetUser?Dni=${dni}`);
+        const response = await fetch(`/Propietario/GetUser?Dni=${dni}`);
 
         if (!response.ok) throw new Error('Failed selection');
 
-        const user = await response.json();
+        const { body } = await response.json();
 
         $modal_state.dataset.userDni = dni;
-        $h3.textContent = `Esta por dar de ${(user.state) ? 'baja' : 'alta'} al usuario ${user.name} ${user.lastName}.`;
+        $h3.textContent = `Esta por dar de ${(body.estado) ? 'baja' : 'alta'} al usuario ${body.nombre} ${body.apellido}.`;
       } catch (err) {
         console.error('Failed recovery ' + err.message);
 
@@ -185,7 +184,7 @@
       const dni = $modal_state.dataset.userDni;
 
       try {
-        const response = await fetch(`/User/EditState?Dni=${dni}`, {
+        const response = await fetch(`/Propietario/EditState?Dni=${dni}`, {
           method: 'POST',
           headers: {
             'RequestVerificationToken': token

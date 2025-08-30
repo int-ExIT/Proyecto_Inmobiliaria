@@ -1,0 +1,211 @@
+@model IEnumerable<Inmobiliaria.Models.Inquilino>
+@{
+  ViewData["Title"] = "Propietarios";
+  ViewData["Subtitle"] = " Usuarios";
+}
+
+<div class="container-fluid text-center d-grid gap-4">
+  @* Modal de edicion de datos *@
+  @await Html.PartialAsync("_EditModal", new Inmobiliaria.Models.ViewModels.InquilinoEditVm())
+  @* Modal de edicion de estado *@
+  @await Html.PartialAsync("_EditStateModal")
+
+  @* Titulo *@
+  <div>
+    <h1>Bienvenido a Inquilinos</h1>
+  </div>
+  @* Formulario *@
+  <div class="bg-dark container-fluid p-3 text-white">
+    <form action="">
+      <label for="filter">Filtrar por: </label>
+      <select name="filter" id="filter">
+        <option value="dni">DNI</option>
+        <option value="nombre" selected>Nombre</option>
+        <option value="apellido">Apellido</option>
+        <option value="contacto">Contacto</option>
+        <option value="mail">Email</option>
+      </select>
+      <input type="text" name="filter">
+    </form>
+  </div>
+  @* Tabla *@
+  <div class="bg-dark text-white container-fluid d-flex justify-content-center pt-3">
+    <table class="table table-striped table-hover table-bordered text-start">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>DNI</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Contacto</th>
+          <th>Mail</th>
+          <th colspan="2"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (Model?.Any() == true)
+        {
+          @foreach (var User in Model)
+          {
+            <tr data-dni="@User.Dni">
+              <td class="col-id">@User.Id</td>
+              <td class="col-dni">@User.Dni</td>
+              <td class="col-nombre">@User.Nombre</td>
+              <td class="col-apellido">@User.Apellido</td>
+              <td class="col-contacto">@User.Contacto</td>
+              <td class="col-mail">@User.Mail</td>
+              <td class="text-center">
+                <button class="btn btn-sm bg-success text-white" data-bs-toggle="modal" data-bs-target="#editModal"
+                  data-dni="@User.Dni" data-nombre="@User.Nombre" data-apellido="@User.Apellido" data-mail="@User.Mail"
+                  data-contacto="@User.Contacto">
+                  Editar
+                </button>
+              </td>
+              <td class="text-center">
+                <button class="btn-state btn btn-sm bg-danger text-white" data-bs-toggle="modal"
+                  data-bs-target="#editStateModal" data-dni="@User.Dni">
+                  Dar de @((User.Estado) ? "baja" : "alta")
+                </button>
+              </td>
+            </tr>
+          }
+        }
+        else
+        {
+          <tr>
+            <td colspan="8">No se encontraron resultados...</td>
+          </tr>
+        }
+      </tbody>
+      <tfoot>
+        <tr>
+          <td class="text-center" colspan="8">Esto es el footer...</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>
+
+@section Scripts
+{
+  @await Html.PartialAsync("_ValidationsScriptsPartial")
+
+  <script type="module">
+    const $modal_edit = document.querySelector('#editModal');
+    const $modal_state = document.querySelector('#editStateModal');
+    const $btn_confirm = document.querySelector('#confirm-state');
+    const $form_edit = document.querySelector('#edit-form');
+
+    $modal_edit.addEventListener('show.bs.modal', async evt => {
+      $modal_edit.querySelectorAll('input').forEach($input => {
+        if ($input.name !== '__RequestVerificationToken') $input.value = "";
+      });
+
+      const $btn_edit = evt.relatedTarget;
+      const dni = $btn_edit.getAttribute('data-dni');
+
+      try {
+        const response = await fetch(`/Inquilino/GetUser?Dni=${dni}`);
+
+        if (!response.ok) throw new Error('No se pudo recuperar al usuario');
+
+        const { body } = await response.json();
+
+        // Agregar datos al form:
+        $modal_edit.querySelector('input[name="Dni"]').value = body.dni;
+        $modal_edit.querySelector('input[name="Nombre"]').value = body.nombre;
+        $modal_edit.querySelector('input[name="Apellido"]').value = body.apellido;
+        $modal_edit.querySelector('input[name="Mail"]').value = body.mail;
+        $modal_edit.querySelector('input[name="Contacto"]').value = body.contacto;
+      } catch (err) {
+        console.error('Failed recovery ' + err.message);
+
+        bootstrap.Modal.getInstance($modal_edit)?.hide();
+
+        alert('Failed recovery.');
+      }
+    });
+
+    $form_edit.addEventListener('submit', async evt => {
+      evt.preventDefault();
+
+      const formData = new FormData($form_edit);
+
+      try {
+        const response = await fetch('/Inquilino/EditUser', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) throw new Error('Failed update');
+
+        const { body } = await response.json();
+        const $row_edit = document.querySelector(`tr[data-dni="${body.dni}"]`);
+
+        $row_edit.querySelector('.col-nombre').textContent = body.nombre;
+        $row_edit.querySelector('.col-apellido').textContent = body.apellido;
+        $row_edit.querySelector('.col-contacto').textContent = body.contacto;
+        $row_edit.querySelector('.col-mail').textContent = body.mail;
+
+        console.log('Successful update');
+
+        bootstrap.Modal.getInstance($modal_edit).hide();
+      } catch (err) {
+        console.error('Failed update ' + err);
+        alert('Failed update');
+      }
+    });
+
+    $modal_state.addEventListener('show.bs.modal', async evt => {
+      const $btn_state = evt.relatedTarget;
+      const $h3 = $modal_state.querySelector('h3');
+      const dni = $btn_state.getAttribute('data-dni');
+
+      try {
+        const response = await fetch(`/Inquilino/GetUser?Dni=${dni}`);
+
+        if (!response.ok) throw new Error('Failed selection');
+
+        const { body } = await response.json();
+
+        $modal_state.dataset.userDni = dni;
+        $h3.textContent = `Esta por dar de ${(body.estado) ? 'baja' : 'alta'} al usuario ${body.nombre} ${body.apellido}.`;
+      } catch (err) {
+        console.error('Failed recovery ' + err.message);
+
+        bootstrap.Modal.getInstance($modal_state)?.hide();
+
+        alert('Failed recovery.');
+      }
+    });
+
+    $btn_confirm.addEventListener('click', async evt => {
+      const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+      const dni = $modal_state.dataset.userDni;
+
+      try {
+        const response = await fetch(`/Inquilino/EditState?Dni=${dni}`, {
+          method: 'POST',
+          headers: {
+            'RequestVerificationToken': token
+          }
+        });
+
+        if (!response.ok) throw new Error('Response 404');
+
+        const { state } = await response.json();
+        const $row_edit = document.querySelector(`tr[data-dni="${dni}"]`);
+        const $btn_state = $row_edit.querySelector('.btn-state');
+
+        $btn_state.textContent = `Dar de ${(state ? 'alta' : 'baja')}`;
+
+        console.log('Successful update');
+
+        bootstrap.Modal.getInstance($modal_state).hide();
+      } catch (err) {
+        console.error('Failed update ' + err.message);
+        alert('Failed update');
+      }
+    });
+  </script>
+}

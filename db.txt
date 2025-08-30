@@ -1,0 +1,116 @@
+-- Eliminar tabla en caso de que exista
+DROP DATABASE IF EXISTS inmobiliaria;
+
+-- Crear la base de datos
+CREATE DATABASE inmobiliaria;
+
+-- Seleccionar base
+USE inmobiliaria;
+
+-- Tabla de Usuario
+CREATE TABLE usuarios (
+  id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID(), 1)),
+  dni INT NOT NULL UNIQUE,
+  nombre VARCHAR(100) NOT NULL,
+  apellido VARCHAR(50) NOT NULL,
+  contacto BIGINT NOT NULL UNIQUE,
+  mail VARCHAR(100) NOT NULL UNIQUE,
+  rol ENUM('administrador', 'empleado') NOT NULL,
+  estado BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+-- Tabla de Propietarios
+CREATE TABLE propietarios (
+  id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID(), 1)),
+  dni INT NOT NULL UNIQUE,
+  nombre VARCHAR(100) NOT NULL,
+  apellido VARCHAR(50) NOT NULL,
+  contacto BIGINT NOT NULL UNIQUE,
+  mail VARCHAR(100) NOT NULL UNIQUE,
+  estado BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+-- Tabla de Inquilinos
+CREATE TABLE inquilinos (
+  id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID(), 1)),
+  dni INT NOT NULL UNIQUE,
+  nombre VARCHAR(100) NOT NULL,
+  apellido VARCHAR(50) NOT NULL,
+  contacto BIGINT NOT NULL UNIQUE,
+  mail VARCHAR(100) NOT NULL UNIQUE,
+  estado BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+-- Tabla de Inmueble
+CREATE TABLE inmuebles (
+  id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID(), 1)),
+  id_propietario BINARY(16) NOT NULL,
+  direccion VARCHAR(100) NOT NULL,
+  tipo_de_uso ENUM('recidencial', 'comercial', 'industrial') NOT NULL,
+  tipo ENUM('casa', 'departamento', 'oficina') NOT NULL,
+  numero_de_cuartos TINYINT NOT NULL,
+  coordenadas DECIMAL(10, 6) NOT NULL UNIQUE,
+  precio DECIMAL(12, 2) NOT NULL,
+  estado BOOLEAN NOT NULL DEFAULT TRUE,
+  FOREIGN KEY (id_propietario) REFERENCES propietarios(id) ON DELETE CASCADE
+);
+
+-- Tabla intermedia para relación
+CREATE TABLE contratos (
+  id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID(), 1)),
+  id_propietario BINARY(16),
+  id_inquilino BINARY(16),
+  id_inmueble BINARY(16),
+  dni_propietario_snapshot INT NOT NULL,
+  dni_inquilino_snapshot INT NOT NULL,
+  coordenadas_snapshot DECIMAL(10, 6) NOT NULL,
+  dia_de_inicio DATE NOT NULL,
+  dia_de_finalizacion DATE NOT NULL,
+  precio_mensual DECIMAL(9, 2) NOT NULL,
+  dni_usuario_apertura INT NOT NULL,
+  dni_usuario_cierre INT DEFAULT NULL,
+  estado ENUM('finalizado', 'cancelado', 'vigente') NOT NULL DEFAULT 'vigente',
+  FOREIGN KEY (id_propietario) REFERENCES propietarios(id) ON DELETE SET NULL,
+  FOREIGN KEY (id_inquilino) REFERENCES inquilinos(id) ON DELETE SET NULL,
+  FOREIGN KEY (id_inmueble) REFERENCES inmuebles(id) ON DELETE SET NULL
+);
+
+-- Tabla de pagos
+CREATE TABLE pagos (
+  id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID(), 1)),
+  id_contrato BINARY(16) NOT NULL,
+  id_inquilino BINARY(16),
+  dni_inquilino INT NOT NULL,
+  dia_pago DATE NOT NULL,
+  detalle VARCHAR(200) NOT NULL,
+  monto DECIMAL(12, 2) NOT NULL,
+  estado ENUM('pendiente', 'pagado', 'vencido', 'cancelado') NOT NULL DEFAULT 'pendiente',
+  FOREIGN KEY (id_inquilino) REFERENCES inquilinos(id) ON DELETE SET NULL,
+  FOREIGN KEY (id_contrato) REFERENCES contratos(id) ON DELETE CASCADE
+);
+
+INSERT INTO propietarios(dni, nombre, apellido, contacto, mail)
+VALUES
+(12345678, 'Juan', 'Pérez', 2664111111, 'juan.perez@mail.com'),
+(22345678, 'María', 'González', 2664222222, 'maria.gonzalez@mail.com'),
+(32345678, 'Carlos', 'López', 2664333333, 'carlos.lopez@mail.com'),
+(42345678, 'Laura', 'Martínez', 2664444444, 'laura.martinez@mail.com'),
+(52345678, 'Pedro', 'Fernández', 2664555555, 'pedro.fernandez@mail.com'),
+(62345678, 'Ana', 'Torres', 2664666666, 'ana.torres@mail.com'),
+(72345678, 'Diego', 'Ramírez', 2664777777, 'diego.ramirez@mail.com'),
+(82345678, 'Sofía', 'Moreno', 2664888888, 'sofia.moreno@mail.com'),
+(92345678, 'Martín', 'Castro', 2664999999, 'martin.castro@mail.com'),
+(10345678, 'Lucía', 'Silva', 2664000000, 'lucia.silva@mail.com');
+
+INSERT INTO inquilinos(dni, nombre, apellido, contacto, mail)
+VALUES
+(50345678, 'Ramiro', 'Lucero', 2664211211, 'ramiro.lucero@mail.com'),
+(51345678, 'Juana', 'Aguirre', 2664122222, 'juana.aguirre@mail.com'),
+(97345678, 'Abigail', 'Carranza', 2664133233, 'abigail.carranza@mail.com'),
+(53345678, 'Laura', 'Jimenez', 2664144244, 'laura.jimenez@mail.com'),
+(54345678, 'Peolo', 'Fernández', 2664155255, 'paolo.fernandez@mail.com'),
+(55345678, 'Zoe', 'Becerra', 2664166266, 'zoe.becerra@mail.com'),
+(56345678, 'Diego', 'Barzola', 2664177277, 'diego.barzola@mail.com'),
+(57345678, 'Marina', 'Rosales', 2664188288, 'marina.rosales@mail.com'),
+(58345678, 'Jose', 'Carrasco', 2664199299, 'jose.carrasco@mail.com'),
+(59345678, 'Karen', 'Valverde', 2664100200, 'karen.valverde@mail.com');

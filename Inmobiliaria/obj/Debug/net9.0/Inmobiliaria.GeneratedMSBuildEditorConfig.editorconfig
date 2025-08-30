@@ -28,6 +28,30 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Nacho/Documents/GitHub/Proyecto_Inmobiliaria/Inmobiliaria/Views/Inquilino/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5xdWlsaW5vXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nacho/Documents/GitHub/Proyecto_Inmobiliaria/Inmobiliaria/Views/Inquilino/_EditModal.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5xdWlsaW5vXF9FZGl0TW9kYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nacho/Documents/GitHub/Proyecto_Inmobiliaria/Inmobiliaria/Views/Inquilino/_EditStateModal.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5xdWlsaW5vXF9FZGl0U3RhdGVNb2RhbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nacho/Documents/GitHub/Proyecto_Inmobiliaria/Inmobiliaria/Views/Propietario/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvcGlldGFyaW9cSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nacho/Documents/GitHub/Proyecto_Inmobiliaria/Inmobiliaria/Views/Propietario/_EditModal.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvcGlldGFyaW9cX0VkaXRNb2RhbC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Nacho/Documents/GitHub/Proyecto_Inmobiliaria/Inmobiliaria/Views/Propietario/_EditStateModal.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvcGlldGFyaW9cX0VkaXRTdGF0ZU1vZGFsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Nacho/Documents/GitHub/Proyecto_Inmobiliaria/Inmobiliaria/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
@@ -38,18 +62,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Nacho/Documents/GitHub/Proyecto_Inmobiliaria/Inmobiliaria/Views/Shared/_ValidationsScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uc1NjcmlwdHNQYXJ0aWFsLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Nacho/Documents/GitHub/Proyecto_Inmobiliaria/Inmobiliaria/Views/User/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxJbmRleC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Nacho/Documents/GitHub/Proyecto_Inmobiliaria/Inmobiliaria/Views/User/_EditModal.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxfRWRpdE1vZGFsLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Nacho/Documents/GitHub/Proyecto_Inmobiliaria/Inmobiliaria/Views/User/_EditStateModal.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxfRWRpdFN0YXRlTW9kYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Nacho/Documents/GitHub/Proyecto_Inmobiliaria/Inmobiliaria/Views/_ViewImports.cshtml]

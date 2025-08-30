@@ -1,0 +1,56 @@
+# Archivos de compilación
+bin/
+obj/
+out/
+
+# Archivos de usuario y configuraciones locales
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Archivos de logs
+*.log
+
+# Cache de Visual Studio
+.vs/
+*.vscode/
+
+# Paquetes NuGet (dejar el .config o .props)
+*.nupkg
+*.snupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Configuración de Rider/JetBrains
+.idea/
+
+# Archivos generados
+*.dll
+*.exe
+*.pdb
+*.cache
+*.dbmdl
+*.bak
+*.ldf
+*.mdf
+
+# Publicaciones
+publish/
+wwwroot/lib/
+
+# Archivos de sistema
+[Dd]esktop.ini
+[Tt]humbs.db
+*.DS_Store
+
+# Configuración de usuario
+*.swp
+*.sln.iml
+
+# Opcional: excluir secretos locales (dejar appsettings.json limpio)
+# appsettings.Development.json
+# Por las dudas no lo ignoro...

@@ -8,7 +8,7 @@ namespace Inmobiliaria.Repositories;
 
 class DbConnectionSinglenton
 {
-  private static readonly MySqlConnection _connect = new("Server=localhost;Database=real_state;User=root;Password=123456;");
+  private static readonly MySqlConnection _connect = new("Server=localhost;Database=inmobiliaria;User=root;Password=123456;");
 
   private DbConnectionSinglenton() { }
 
