@@ -1,29 +1,29 @@
-@model IEnumerable<Inmobiliaria.Models.Propietario>
+@model IEnumerable<Inmobiliaria.Models.Inmueble>
 @{
-  ViewData["Title"] = "Propietarios";
-  ViewData["Subtitle"] = " Propietarios";
+  ViewData["Title"] = "Inmuebles";
+  ViewData["Subtitle"] = " Inmuebles";
 }
 
 <div class="container-fluid text-center d-grid gap-4">
   @* Modal de edicion de datos *@
-  @await Html.PartialAsync("_EditModal", new Inmobiliaria.Models.ViewModels.PropietarioEditVm())
+  @* @await Html.PartialAsync("_EditModal", new Inmobiliaria.Models.ViewModels.InquilinoEditVm()) *@
   @* Modal de edicion de estado *@
-  @await Html.PartialAsync("_EditStateModal")
+  @* @await Html.PartialAsync("_EditStateModal") *@
 
   @* Titulo *@
   <div>
-    <h1>Bienvenido a Propietarios</h1>
+    <h1>Bienvenido a Inmuebles</h1>
   </div>
   @* Formulario *@
   <div class="bg-dark container-fluid p-3 text-white">
     <form action="">
       <label for="filter">Filtrar por: </label>
       <select name="filter" id="filter">
-        <option value="dni">DNI</option>
-        <option value="nombre" selected>Nombre</option>
-        <option value="apellido">Apellido</option>
-        <option value="contacto">Contacto</option>
-        <option value="mail">Email</option>
+        <option value="direccion">Direccion</option>
+        <option value="tipo_de_uso" selected>Uso</option>
+        <option value="tipo">Tipo</option>
+        <option value="numero_de_cuartos">Cuartos</option>
+        <option value="precio">Precio</option>
       </select>
       <input type="text" name="filter">
     </form>
@@ -34,11 +34,13 @@
       <thead>
         <tr>
           <th>ID</th>
-          <th>DNI</th>
-          <th>Nombre</th>
-          <th>Apellido</th>
-          <th>Contacto</th>
-          <th>Mail</th>
+          <th>ID Propietario</th>
+          <th>Direccion</th>
+          <th>Uso</th>
+          <th>Tipo</th>
+          <th>Numero de Cuartos</th>
+          <th>Coordenadas</th>
+          <th>Precio</th>
           <th colspan="2"></th>
         </tr>
       </thead>
@@ -47,22 +49,24 @@
         {
           @foreach (var Obj in Model)
           {
-            <tr data-dni="@Obj.Dni">
+            <tr data-coor="@Obj.Coordenadas">
               <td class="col-id">@Obj.Id</td>
-              <td class="col-dni">@Obj.Dni</td>
-              <td class="col-nombre">@Obj.Nombre</td>
-              <td class="col-apellido">@Obj.Apellido</td>
-              <td class="col-contacto">@Obj.Contacto</td>
-              <td class="col-mail">@Obj.Mail</td>
+              <td class="col-id-prop">@Obj.IdPropietario</td>
+              <td class="col-direccion">@Obj.Direccion</td>
+              <td class="col-uso">@Obj.TipoDeUso</td>
+              <td class="col-tipo">@Obj.Tipo</td>
+              <td class="col-cuartos">@Obj.NumeroDeCuartos</td>
+              <td class="col-coordenadas">@Obj.Coordenadas</td>
+              <td class="col-precio">@Obj.Precio</td>
               <td class="text-center">
                 <button class="btn btn-sm bg-success text-white" data-bs-toggle="modal" data-bs-target="#editModal"
-                  data-dni="@Obj.Dni">
+                  data-coor="@Obj.Coordenadas">
                   Editar
                 </button>
               </td>
               <td class="text-center">
                 <button class="btn-state btn btn-sm bg-danger text-white" data-bs-toggle="modal"
-                  data-bs-target="#editStateModal" data-dni="@Obj.Dni">
+                  data-bs-target="#editStateModal" data-coor="@Obj.Coordenadas">
                   Dar de @((Obj.Estado) ? "baja" : "alta")
                 </button>
               </td>
@@ -72,13 +76,13 @@
         else
         {
           <tr>
-            <td colspan="8">No se encontraron resultados...</td>
+            <td colspan="10">No se encontraron resultados...</td>
           </tr>
         }
       </tbody>
       <tfoot>
         <tr>
-          <td class="text-center" colspan="8">Esto es el footer...</td>
+          <td class="text-center" colspan="10">Esto es el footer...</td>
         </tr>
       </tfoot>
     </table>
@@ -104,7 +108,7 @@
       const dni = $btn_edit.getAttribute('data-dni');
 
       try {
-        const response = await fetch(`/Propietario/GetUser?Dni=${dni}`);
+        const response = await fetch(`/Inquilino/GetUser?Dni=${dni}`);
 
         if (!response.ok) throw new Error('No se pudo recuperar al usuario');
 
@@ -131,7 +135,7 @@
       const formData = new FormData($form_edit);
 
       try {
-        const response = await fetch('/Propietario/EditUser', {
+        const response = await fetch('/Inquilino/EditUser', {
           method: 'POST',
           body: formData
         });
@@ -161,7 +165,7 @@
       const dni = $btn_state.getAttribute('data-dni');
 
       try {
-        const response = await fetch(`/Propietario/GetUser?Dni=${dni}`);
+        const response = await fetch(`/Inquilino/GetUser?Dni=${dni}`);
 
         if (!response.ok) throw new Error('Failed selection');
 
@@ -183,7 +187,7 @@
       const dni = $modal_state.dataset.userDni;
 
       try {
-        const response = await fetch(`/Propietario/EditState?Dni=${dni}`, {
+        const response = await fetch(`/Inquilino/EditState?Dni=${dni}`, {
           method: 'POST',
           headers: {
             'RequestVerificationToken': token

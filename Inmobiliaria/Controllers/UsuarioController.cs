@@ -41,7 +41,7 @@ public class UserController(IRepository<Usuario> Repository) : Controller
 
     var element = _userRepository.ReadOne(("dni", vm.Dni)).Entity;
 
-    if (element == null) return NotFound(new { Success = false, Message = "Usuario no encontrado" });
+    if (element == null) return NotFound(new { Success = false, Message = "Item not found." });
 
     Dictionary<string, object> newData = new()
     {
@@ -64,7 +64,7 @@ public class UserController(IRepository<Usuario> Repository) : Controller
   {
     var element = _userRepository.ReadOne(("dni", Dni)).Entity;
 
-    if (element == null) return NotFound(new { Success = false, Message = "Usuario no encontrado" });
+    if (element == null) return NotFound(new { Success = false, Message = "Item not found." });
 
     Dictionary<string, object> newData = new()
     {

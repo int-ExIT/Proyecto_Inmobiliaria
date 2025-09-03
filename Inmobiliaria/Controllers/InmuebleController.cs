@@ -8,9 +8,9 @@ using Inmobiliaria.Models.ViewModels;
 
 namespace Inmobiliaria.Controllers;
 
-public class InquilinoController(IRepository<Inquilino> Repository) : Controller
+public class InmuebleController(IRepository<Inmueble> Repository) : Controller
 {
-  private readonly IRepository<Inquilino> _userRepository = Repository;
+  private readonly IRepository<Inmueble> _userRepository = Repository;
 
   [HttpGet]
   public IActionResult Index()
@@ -20,37 +20,35 @@ public class InquilinoController(IRepository<Inquilino> Repository) : Controller
     return View(elements);
   }
 
-  [HttpGet] // VER COMO MANEJAR EL TEMA DE LA MULTI INSTANCIA DE LOS CONTROLADORES
-  public IActionResult GetUser(int Dni)
+  [HttpGet]
+  public IActionResult GetElement(decimal Coordenadas)
   {
-    var element = _userRepository.ReadOne(("dni", Dni)).Entity;
+    var element = _userRepository.ReadOne(("coordenadas", Coordenadas)).Entity;
 
     if (element == null) return NotFound();
 
     return Json(new { Success = true, Body = element });
   }
 
-  // Esta accion recolecta los datos de la modal y los usa para la actualizacion
-  [HttpPost] /* Indica que tal metodo responde a una solicitud POST */
-  [ValidateAntiForgeryToken] /* Para evitar ataques CSRF (Corss-Site Request Forgery) */
-  public IActionResult EditUser(UsuarioEditVm vm) /* Cubre peticiones POST */
+  [HttpPost]
+  [ValidateAntiForgeryToken]
+  public IActionResult EditElement(InmuebleEditVm vm)
   {
-    // "ModelState.IsValid" cheque que todos los campos requeridos cumplan sus respectivas condiciones
-    // "BadRequest" devuelve un 404 con body 
     if (!ModelState.IsValid) return BadRequest(ModelState);
 
-    var element = _userRepository.ReadOne(("dni", vm.Dni)).Entity;
+    var element = _userRepository.ReadOne(("coordenadas", vm.Coordenadas)).Entity;
 
-    // "NotFound" devuelve un 404 son body 
     if (element == null) return NotFound(new { Success = false, Message = "Item not found." });
 
     Dictionary<string, object> newData = new()
     {
-      { "dni", vm.Dni },
-      { "nombre", vm.Nombre },
-      { "apellido", vm.Apellido },
-      { "contacto", vm.Contacto },
-      { "mail", vm.Mail },
+      { "coordenadas", vm.Coordenadas },
+      { "id_propietario", vm.IdPropietario },
+      { "direccion", vm.Direccion },
+      { "tipo_de_uso", vm.TipoDeUso },
+      { "tipo", vm.Tipo },
+      { "numero_de_cuartos", vm.NumeroDeCuartos },
+      { "precio", vm.Precio }
     };
     int affectedRows = _userRepository.Update(newData);
     Console.WriteLine($"Rows affected: {affectedRows}");
@@ -60,16 +58,16 @@ public class InquilinoController(IRepository<Inquilino> Repository) : Controller
 
   [HttpPost]
   [ValidateAntiForgeryToken]
-  public IActionResult EditState(int Dni)
+  public IActionResult EditState(decimal Coordenadas)
   {
-    var element = _userRepository.ReadOne(("dni", Dni)).Entity;
+    var element = _userRepository.ReadOne(("coordenadas", Coordenadas)).Entity;
 
     if (element == null) return NotFound(new { Success = false, Message = "Item not found." });
 
     Dictionary<string, object> newData = new()
     {
       { "estado", !element.Estado },
-      { "dni", Dni }
+      { "coordenadas", Coordenadas }
     };
     int affectedRows = _userRepository.Update(newData);
     Console.WriteLine($"Rows affected: {affectedRows}");

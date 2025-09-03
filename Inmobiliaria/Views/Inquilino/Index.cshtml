@@ -1,7 +1,7 @@
 @model IEnumerable<Inmobiliaria.Models.Inquilino>
 @{
-  ViewData["Title"] = "Propietarios";
-  ViewData["Subtitle"] = " Usuarios";
+  ViewData["Title"] = "Inquilinos";
+  ViewData["Subtitle"] = " Inquilinos";
 }
 
 <div class="container-fluid text-center d-grid gap-4">
@@ -45,26 +45,25 @@
       <tbody>
         @if (Model?.Any() == true)
         {
-          @foreach (var User in Model)
+          @foreach (var Obj in Model)
           {
-            <tr data-dni="@User.Dni">
-              <td class="col-id">@User.Id</td>
-              <td class="col-dni">@User.Dni</td>
-              <td class="col-nombre">@User.Nombre</td>
-              <td class="col-apellido">@User.Apellido</td>
-              <td class="col-contacto">@User.Contacto</td>
-              <td class="col-mail">@User.Mail</td>
+            <tr data-dni="@Obj.Dni">
+              <td class="col-id">@Obj.Id</td>
+              <td class="col-dni">@Obj.Dni</td>
+              <td class="col-nombre">@Obj.Nombre</td>
+              <td class="col-apellido">@Obj.Apellido</td>
+              <td class="col-contacto">@Obj.Contacto</td>
+              <td class="col-mail">@Obj.Mail</td>
               <td class="text-center">
                 <button class="btn btn-sm bg-success text-white" data-bs-toggle="modal" data-bs-target="#editModal"
-                  data-dni="@User.Dni" data-nombre="@User.Nombre" data-apellido="@User.Apellido" data-mail="@User.Mail"
-                  data-contacto="@User.Contacto">
+                  data-dni="@Obj.Dni">
                   Editar
                 </button>
               </td>
               <td class="text-center">
                 <button class="btn-state btn btn-sm bg-danger text-white" data-bs-toggle="modal"
-                  data-bs-target="#editStateModal" data-dni="@User.Dni">
-                  Dar de @((User.Estado) ? "baja" : "alta")
+                  data-bs-target="#editStateModal" data-dni="@Obj.Dni">
+                  Dar de @((Obj.Estado) ? "baja" : "alta")
                 </button>
               </td>
             </tr>

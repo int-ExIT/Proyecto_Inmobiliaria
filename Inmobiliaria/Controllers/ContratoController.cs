@@ -8,9 +8,9 @@ using Inmobiliaria.Models.ViewModels;
 
 namespace Inmobiliaria.Controllers;
 
-public class PropietarioController(IRepository<Propietario> Repository) : Controller
+public class ContratoController(IRepository<Contrato> Repository) : Controller
 {
-  private readonly IRepository<Propietario> _userRepository = Repository;
+  private readonly IRepository<Contrato> _userRepository = Repository;
 
   [HttpGet]
   public IActionResult Index()
@@ -21,9 +21,9 @@ public class PropietarioController(IRepository<Propietario> Repository) : Contro
   }
 
   [HttpGet]
-  public IActionResult GetUser(int Dni)
+  public IActionResult GetElement(Guid Id)
   {
-    var element = _userRepository.ReadOne(("dni", Dni)).Entity;
+    var element = _userRepository.ReadOne(("id", Id)).Entity;
 
     if (element == null) return NotFound();
 
@@ -32,21 +32,18 @@ public class PropietarioController(IRepository<Propietario> Repository) : Contro
 
   [HttpPost]
   [ValidateAntiForgeryToken]
-  public IActionResult EditUser(UsuarioEditVm vm)
+  public IActionResult EditElement(ContratoEditVm vm)
   {
     if (!ModelState.IsValid) return BadRequest(ModelState);
 
-    var element = _userRepository.ReadOne(("dni", vm.Dni)).Entity;
+    var element = _userRepository.ReadOne(("id", vm.Id)).Entity;
 
     if (element == null) return NotFound(new { Success = false, Message = "Item not found." });
 
     Dictionary<string, object> newData = new()
     {
-      { "dni", vm.Dni },
-      { "nombre", vm.Nombre },
-      { "apellido", vm.Apellido },
-      { "contacto", vm.Contacto },
-      { "mail", vm.Mail },
+      { "dia_de_finalizacion", vm.DiaDeFinalizacion },
+      { "precio_mensual", vm.PrecioMensual },
     };
     int affectedRows = _userRepository.Update(newData);
     Console.WriteLine($"Rows affected: {affectedRows}");
@@ -56,16 +53,17 @@ public class PropietarioController(IRepository<Propietario> Repository) : Contro
 
   [HttpPost]
   [ValidateAntiForgeryToken]
-  public IActionResult EditState(int Dni)
+  public IActionResult EditState(Guid Id, int DniUsuarioCierre, string Estado)
   {
-    var element = _userRepository.ReadOne(("dni", Dni)).Entity;
+    var element = _userRepository.ReadOne(("id", Id)).Entity;
 
     if (element == null) return NotFound(new { Success = false, Message = "Item not found." });
 
     Dictionary<string, object> newData = new()
     {
-      { "estado", !element.Estado },
-      { "dni", Dni }
+      { "dni_usuario_cierre", DniUsuarioCierre },
+      { "estado", Estado },
+      { "id", Id }
     };
     int affectedRows = _userRepository.Update(newData);
     Console.WriteLine($"Rows affected: {affectedRows}");
