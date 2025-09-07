@@ -1,12 +1,12 @@
-@model IEnumerable<Inmobiliaria.Models.Inmueble>
+@model IEnumerable<Inmobiliaria.Models.Contrato>
 @{
-  ViewData["Title"] = "Inmuebles";
-  ViewData["Subtitle"] = " Inmuebles";
+  ViewData["Title"] = "Contratos";
+  ViewData["Subtitle"] = " Contratos";
 }
 
 <div class="container-fluid text-center d-grid gap-4">
   @* Modal de edicion de datos *@
-  @await Html.PartialAsync("_EditModal", new Inmobiliaria.Models.ViewModels.InmuebleEditVm())
+  @await Html.PartialAsync("_EditModal", new Inmobiliaria.Models.ViewModels.ContratoEditVm())
   @* Modal de edicion de estado *@
   @await Html.PartialAsync("_EditStateModal")
   @* Modal de informacion *@
@@ -14,18 +14,15 @@
 
   @* Titulo *@
   <div>
-    <h1>Bienvenido a Inmuebles</h1>
+    <h1>Bienvenido a Contratos</h1>
   </div>
   @* Formulario *@
   <div class="bg-dark container-fluid p-3 text-white">
     <form action="">
-      <label for="filter">Filtrar por: </label>
+      <label for="filter">Buscar: </label>
       <select name="filter" id="filter">
-        <option value="direccion">Direccion</option>
-        <option value="tipo_de_uso" selected>Uso</option>
-        <option value="tipo">Tipo</option>
-        <option value="numero_de_cuartos">Cuartos</option>
-        <option value="precio">Precio</option>
+        <option value="prietario" selected>Propietario</option>
+        <option value="inquilino">Inquilino</option>
       </select>
       <input type="text" name="filter">
     </form>
@@ -35,31 +32,31 @@
     {
       @foreach (var Obj in Model)
       {
-        <div data-coor="@Obj.Coordenadas" class="card border-dark col-5 m-1">
+        <div data-coor="Obj.Coordenadas" class="card border-dark col-5 m-1">
           <div class="card-header bg-dark text-white">
-            <h5 class="card-direccion card-title mb-0">Ubicado en @Obj.Direccion</h5>
+            <h5 class="card-direccion card-title mb-0">Ubicado en Obj.Direccion</h5>
           </div>
 
           <div class="card-body div-info text-start d-flex">
             <div class="d-flex flex-column col-6">
-              <h6 class="card-text mb-1">@Obj.Tipo - @Obj.TipoDeUso</h6>
-              <h6 class="card-info card-cuartos card-text mb-1">@Obj.NumeroDeCuartos @(Obj.NumeroDeCuartos == 1 ? "habitacion" : "habitaciones")</h6>
-              <h6 class="card-precio card-text">$@Obj.Precio</h6>
+              <h6 class="card-text mb-1">Obj.Tipo - Obj.TipoDeUso</h6>
+              <h6 class="card-info card-cuartos card-text mb-1">Obj.NumeroDeCuartos (Obj.NumeroDeCuartos == 1 ? "habitacion" : "habitaciones")</h6>
+              <h6 class="card-precio card-text">$Obj.Precio</h6>
             </div>
           </div>
 
           <div class="card-footer div-action border-dark bg-dark text-white">
             <button class="btn btn-sm bg-primary text-white mx-1" data-bs-toggle="modal" data-bs-target="#viewInfoModal"
-              data-coor="@Obj.Coordenadas">
+              data-coor="Obj.Coordenadas">
               Ver propietario
             </button>
             <button class="btn btn-sm bg-success text-white mx-1" data-bs-toggle="modal" data-bs-target="#editModal"
-              data-coor="@Obj.Coordenadas">
+              data-coor="Obj.Coordenadas">
               Editar
             </button>
             <button class="btn-state btn btn-sm bg-danger text-white mx-1" data-bs-toggle="modal"
-              data-bs-target="#editStateModal" data-coor="@Obj.Coordenadas">
-              Dar de @((Obj.Estado) ? "baja" : "alta")
+              data-bs-target="#editStateModal" data-coor="Obj.Coordenadas">
+              Dar de ((Obj.Estado) ? "baja" : "alta")
             </button>
           </div>
         </div>

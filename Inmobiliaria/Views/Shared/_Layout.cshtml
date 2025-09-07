@@ -14,28 +14,26 @@
 <body>
   <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-dark border-bottom box-shadow mb-3">
-      <div class="container-fluid">
-        <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Index">@ViewData["Subtitle"]</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-          <ul class="navbar-nav flex-grow-1">
+      <div class="container-fluid h-25">
+        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between h-25">
+          <ul class="navbar-nav flex-grow-1 p-0 gap-4 d-flex align-items-center">
             <li class="nav-item">
-              <a class="nav-link text-dark text-white" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+              <p class="navbar-brand text-warning fs-4 m-0 p-0">@ViewData["Subtitle"]</p>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white" asp-area="" asp-controller="Propietario" asp-action="Index">Propietario</a>
+              <a class="nav-link text-dark text-white p-0" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white" asp-area="" asp-controller="Inquilino" asp-action="Index">Inquilino</a>
+              <a class="nav-link text-white p-0" asp-area="" asp-controller="Propietario" asp-action="Index">Propietario</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white" asp-area="" asp-controller="Inmueble" asp-action="Index">Inmueble</a>
+              <a class="nav-link text-white p-0" asp-area="" asp-controller="Inquilino" asp-action="Index">Inquilino</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+              <a class="nav-link text-white p-0" asp-area="" asp-controller="Inmueble" asp-action="Index">Inmueble</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-white p-0" asp-area="" asp-controller="Contrato" asp-action="Index">Contrato</a>
             </li>
           </ul>
         </div>

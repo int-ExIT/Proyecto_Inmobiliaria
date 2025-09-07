@@ -34,22 +34,27 @@ public class InmuebleController(IRepository<Inmueble> Repository) : Controller
   [ValidateAntiForgeryToken]
   public IActionResult EditElement(InmuebleEditVm vm)
   {
+    Console.WriteLine("Ejecutando el endpoint...");
     if (!ModelState.IsValid) return BadRequest(ModelState);
+    Console.WriteLine("This is coordenadas -> " + vm.Coordenadas);
 
     var element = _userRepository.ReadOne(("coordenadas", vm.Coordenadas)).Entity;
+    Console.WriteLine("This is element -> " + element?.Coordenadas ?? "--N/A--");
 
     if (element == null) return NotFound(new { Success = false, Message = "Item not found." });
+    Console.WriteLine("Entrando al mapa...");
 
     Dictionary<string, object> newData = new()
     {
       { "coordenadas", vm.Coordenadas },
-      { "id_propietario", vm.IdPropietario },
       { "direccion", vm.Direccion },
       { "tipo_de_uso", vm.TipoDeUso },
       { "tipo", vm.Tipo },
       { "numero_de_cuartos", vm.NumeroDeCuartos },
       { "precio", vm.Precio }
     };
+    Console.WriteLine("Saliendo del mapa...");
+    Console.WriteLine("Entrando al update...");
     int affectedRows = _userRepository.Update(newData);
     Console.WriteLine($"Rows affected: {affectedRows}");
 

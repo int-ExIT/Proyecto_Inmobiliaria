@@ -1,0 +1,55 @@
+@model Inmobiliaria.Models.ViewModels.ContratoEditVm
+
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar Contrato</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body text-start bg-dark text-white">
+        <form asp-action="Edit" asp-controller="Inquilino" method="POST" id="edit-form">
+          @Html.AntiForgeryToken()
+
+          @* <input type="hidden" asp-for="Coordenadas" />
+
+          <div class="mb-3">
+            <label asp-for="Direccion" class="form-label"></label>
+            <input asp-for="Direccion" class="form-control" />
+            <span asp-validation-for="Direccion" class="text-danger"></span>
+          </div>
+
+          <div class="mb-3">
+            <label asp-for="TipoDeUso" class="form-label"></label>
+            <input asp-for="TipoDeUso" class="form-control" />
+            <span asp-validation-for="TipoDeUso" class="text-danger"></span>
+          </div>
+
+          <div class="mb-3">
+            <label asp-for="Tipo" class="form-label"></label>
+            <input asp-for="Tipo" class="form-control" />
+            <span asp-validation-for="Tipo" class="text-danger"></span>
+          </div>
+
+          <div class="mb-3">
+            <label asp-for="NumeroDeCuartos" class="form-label"></label>
+            <input asp-for="NumeroDeCuartos" class="form-control" />
+            <span asp-validation-for="NumeroDeCuartos" class="text-danger"></span>
+          </div>
+
+          <div class="mb-3">
+            <label asp-for="Precio" class="form-label"></label>
+            <input asp-for="Precio" class="form-control" />
+            <span asp-validation-for="Precio" class="text-danger"></span>
+          </div> *@
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
