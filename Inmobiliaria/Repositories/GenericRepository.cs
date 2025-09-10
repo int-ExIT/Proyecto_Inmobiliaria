@@ -184,6 +184,73 @@ public class GenericRepository<T> : IRepository<T>
     }
   }
 
+  public virtual IEnumerable<T> FindLike((string Key, object Value) Filter)
+  {
+    try
+    {
+      // Establecer conexion
+      ConnectionManager(true);
+
+      // Crear consulta
+      string query = $"SELECT * FROM {this.Name} WHERE {Filter.Key} LIKE @{Filter.Key};";
+      using MySqlCommand command = new(query, this.Connection);
+      command.Parameters.AddWithValue($"@{Filter.Key}", $"{Filter.Value}%");
+
+      // Ejecutar consulta
+      using var reader = command.ExecuteReader();
+
+      Console.WriteLine("Successful advanced selection/s (like).");
+
+      return [..
+        Enumerable
+          .Repeat(0, 10)
+          .TakeWhile(_ => reader.Read())
+          .Select(_ => this.Build(reader))
+      ];
+    }
+    catch (Exception ex)
+    {
+      throw new InvalidOperationException("Advanced selection/s (like) failed.", ex);
+    }
+    finally
+    {
+      ConnectionManager(false);
+    }
+  }
+
+  public virtual IEnumerable<T> CustomQuery(string Query, object Value)
+  {
+    try
+    {
+      // Establecer conexion
+      ConnectionManager(true);
+
+      // Crear consulta
+      using MySqlCommand command = new(Query, this.Connection);
+      command.Parameters.AddWithValue("@value", $"{Value}%");
+      // Ejecutar consulta
+      using var reader = command.ExecuteReader();
+
+      Console.WriteLine("Successful selections.");
+
+      // Construyo de forma dinamica y retorno cada elemento que me devuelva la consulta
+      return [..
+        Enumerable
+          .Repeat(0, 10)
+          .TakeWhile(_ => reader.Read())
+          .Select(_ => this.Build(reader))
+      ];
+    }
+    catch (Exception ex)
+    {
+      throw new InvalidOperationException("Failed selections.", ex);
+    }
+    finally
+    {
+      ConnectionManager(false);
+    }
+  }
+
   public virtual int Update(Dictionary<string, object> NewData)
   {
     try

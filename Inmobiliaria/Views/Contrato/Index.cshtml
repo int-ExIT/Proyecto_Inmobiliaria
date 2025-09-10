@@ -4,7 +4,7 @@
   ViewData["Subtitle"] = " Contratos";
 }
 
-<div class="container-fluid text-center d-grid gap-4">
+<div class="container-fluid text-center d-flex gap-2">
   @* Modal de edicion de datos *@
   @await Html.PartialAsync("_EditModal", new Inmobiliaria.Models.ViewModels.ContratoEditVm())
   @* Modal de edicion de estado *@
@@ -12,77 +12,209 @@
   @* Modal de informacion *@
   @await Html.PartialAsync("_ViewInfoModal")
 
-  @* Titulo *@
-  <div>
-    <h1>Bienvenido a Contratos</h1>
-  </div>
-  @* Formulario *@
-  <div class="bg-dark container-fluid p-3 text-white">
-    <form action="">
-      <label for="filter">Buscar: </label>
-      <select name="filter" id="filter">
-        <option value="prietario" selected>Propietario</option>
-        <option value="inquilino">Inquilino</option>
-      </select>
-      <input type="text" name="filter">
+  <div class="d-flex flex-column col-4 bg-dark p-3 text-white gap-2">
+    <div>
+      <h1>Bienvenido a Contratos</h1>
+    </div>
+
+    <form action="" class="d-flex gap-3 justify-content-center">
+      <div class="d-flex flex-column align-items-start gap-2">
+        <label for="search-propietario">Propietario </label>
+        <input type="text" style="width: 150px;" name="search-propietario" id="search-propietario">
+      </div>
+
+      <div class="d-flex flex-column align-items-start gap-2">
+        <label for="search-inquilino">Inquilino </label>
+        <input type="text" style="width: 150px;" name="search-inquilino" id="search-inquilino">
+      </div>
     </form>
+
+    <table class="table table-dark">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>DNI</th>
+        </tr>
+      </thead>
+      <tbody id="body-table">
+      </tbody>
+    </table>
   </div>
-  <div class="d-flex flex-wrap justify-content-center">
-    @if (Model?.Any() == true)
-    {
-      @foreach (var Obj in Model)
-      {
-        <div data-coor="Obj.Coordenadas" class="card border-dark col-5 m-1">
-          <div class="card-header bg-dark text-white">
-            <h5 class="card-direccion card-title mb-0">Ubicado en Obj.Direccion</h5>
-          </div>
 
-          <div class="card-body div-info text-start d-flex">
-            <div class="d-flex flex-column col-6">
-              <h6 class="card-text mb-1">Obj.Tipo - Obj.TipoDeUso</h6>
-              <h6 class="card-info card-cuartos card-text mb-1">Obj.NumeroDeCuartos (Obj.NumeroDeCuartos == 1 ? "habitacion" : "habitaciones")</h6>
-              <h6 class="card-precio card-text">$Obj.Precio</h6>
-            </div>
-          </div>
+  <div class="div-body d-flex flex-wrap justify-content-start"></div>
 
-          <div class="card-footer div-action border-dark bg-dark text-white">
-            <button class="btn btn-sm bg-primary text-white mx-1" data-bs-toggle="modal" data-bs-target="#viewInfoModal"
-              data-coor="Obj.Coordenadas">
-              Ver propietario
-            </button>
-            <button class="btn btn-sm bg-success text-white mx-1" data-bs-toggle="modal" data-bs-target="#editModal"
-              data-coor="Obj.Coordenadas">
-              Editar
-            </button>
-            <button class="btn-state btn btn-sm bg-danger text-white mx-1" data-bs-toggle="modal"
-              data-bs-target="#editStateModal" data-coor="Obj.Coordenadas">
-              Dar de ((Obj.Estado) ? "baja" : "alta")
-            </button>
-          </div>
-        </div>
-      }
-    }
-    else
-    {
-      <div class="card col-12">
-        <div class="card-body">
-          <h5 class="card-text">No se encontraron resultados...</h5>
+  <template id="my-template">
+    <div class="card border-dark col-5 m-1">
+      <div class="card-header bg-dark text-white">
+        <h5 class="card-prop card-title mb-0"></h5>
+        <small class="card-date mb-0"></small>
+      </div>
+
+      <div class="card-body div-info text-start d-flex">
+        <div class="d-flex flex-column col-6">
+          <h6 class="card-direccion card-text"></h6>
         </div>
       </div>
-    }
-    </ul>
-  </div>
-</div>
 
+      <div class="card-footer div-action border-dark bg-dark text-white">
+        <button class="btn btn-sm bg-primary text-white mx-1" data-bs-toggle="modal" data-bs-target="#viewInfoModal">
+          Ver mas
+        </button>
+        <button class="btn btn-sm bg-success text-white mx-1" data-bs-toggle="modal" data-bs-target="#editModal">
+          Editar
+        </button>
+        <button class="btn-state btn btn-sm bg-danger text-white mx-1" data-bs-toggle="modal"
+          data-bs-target="#editStateModal">
+          Anular contrato
+        </button>
+      </div>
+    </div>
+  </template>
+</div>
 @section Scripts
 {
   @await Html.PartialAsync("_ValidationsScriptsPartial")
 
   <script type="module">
-    const $modal_edit = document.querySelector('#editModal');
+    /* const $modal_edit = document.querySelector('#editModal');
     const $modal_state = document.querySelector('#editStateModal');
     const $btn_confirm = document.querySelector('#confirm-state');
-    const $form_edit = document.querySelector('#edit-form');
+    const $form_edit = document.querySelector('#edit-form'); */
+
+    const $body = document.querySelector('.div-body');
+    const $template = document.querySelector('#my-template');
+    const $propietarios = document.querySelector('#search-propietario');
+    const $inquilinos = document.querySelector('#search-inquilino');
+    const $table = document.querySelector('#body-table');
+
+    $propietarios.addEventListener('click', async evt => {
+      const elements = await getContracts('propietario', '');
+      buildTable(elements);
+    });
+
+    $inquilinos.addEventListener('click', async evt => {
+      const elements = await getContracts('inquilino', '');
+      buildTable(elements);
+    });
+
+    $propietarios.addEventListener('keyup', async evt => {
+      // Ignorar teclas de control (Shift, Alt, Ctrl, etc.)
+      if (evt.ctrlKey || evt.altKey || evt.metaKey) return;
+
+      // Ignorar teclas que no son un solo carácter (ej: "Shift", "ArrowUp")
+      if (evt.key.length > 1 && evt.key !== "Backspace") return;
+
+      // Validar solo letras, números y backspace
+      if (!/^[A-Za-z]$/.test(evt.key) && evt.key !== "Backspace") return;
+
+      const elements = await getContracts('propietario', $propietarios.value);
+      buildTable(elements);
+    });
+
+    $inquilinos.addEventListener('keyup', async evt => {
+      if (evt.ctrlKey || evt.altKey || evt.metaKey) return;
+
+      if (evt.key.length > 1 && evt.key !== "Backspace") return;
+
+      if (!/^[A-Za-z]$/.test(evt.key) && evt.key !== "Backspace") return;
+
+      const elements = await getContracts('inquilino', $inquilinos.value);
+      buildTable(elements);
+    });
+
+    async function getContracts(entity, name, dni) {
+      try {
+        const response = await fetch(`/Contrato/GetContracts?Entity=${entity}&${(dni ? `Dni=${dni}` : `Nombre=${name}`)}`);
+
+        if (!response.ok) throw new Error('No se pudo recuperar el elemento');
+
+        const { body } = await response.json();
+
+        return body;
+      } catch (err) {
+        console.error('Failed recovery ' + err.message);
+
+        alert('Failed recovery.');
+      }
+    }
+
+    function buildTable(elements) {
+      $table.querySelectorAll('tr').forEach($tr => $tr.remove());
+
+      if (elements.length === 0) {
+        const $row = document.createElement('tr');
+        const $result = document.createElement('td');
+
+        $result.textContent = 'No hay resultados...';
+        $row.appendChild($result);
+
+        $table.appendChild($row);
+        return;
+      }
+
+      const $fragment = document.createDocumentFragment();
+
+      for (let element of elements) {
+        if (
+          $fragment.getElementById(element.dniInquilino) !== null ||
+          $fragment.getElementById(element.dniPropietario) !== null
+        ) continue;
+
+        const $row = document.createElement('tr');
+
+        $row.addEventListener('click', async function () {
+          const elements = await getContracts(this.dataType, '', this.id);
+          buildList(elements);
+        });
+
+        const $nombre = document.createElement('td');
+        const $apellido = document.createElement('td');
+        const $dni = document.createElement('td');
+
+        if (document.activeElement === $propietarios) {
+          $nombre.textContent = element.nombrePropietario;
+          $apellido.textContent = element.apellidoPropietario;
+          $dni.textContent = element.dniPropietario;
+          $row.dataType = 'propietario';
+          $row.id = element.dniPropietario;
+        } else if (document.activeElement === $inquilinos) {
+          $nombre.textContent = element.nombreInquilino;
+          $apellido.textContent = element.apellidoInquilino;
+          $dni.textContent = element.dniInquilino;
+          $row.dataType = 'inquilino';
+          $row.id = element.dniInquilino;
+        }
+
+        $row.appendChild($nombre);
+        $row.appendChild($apellido);
+        $row.appendChild($dni);
+
+        $fragment.appendChild($row);
+      }
+
+      $table.appendChild($fragment);
+    }
+
+    function buildList(elements) {
+      const $fragment = document.createDocumentFragment();
+
+      for (let element of elements) {
+        const $card = $template.content.cloneNode(true);
+        console.log($card);
+
+        const nameP = `${element.nombrePropietario} ${element.apellidoPropietario}`;
+        const nameI = `${element.nombreInquilino} ${element.apellidoInquilino}`;
+        const date = `${element.diaDeInicio} - ${element.diaDeFinalizacion}`;
+
+        $card.querySelector('.card-title').textContent = `${nameP} - ${nameI}`;
+        $card.querySelector('.card-date').textContent = date;
+        $card.querySelector('.card-direccion').textContent = `En calle ${element.direccion}`;
+
+        $fragment.appendChild($card);
+      }
+      $body.appendChild($fragment);
+    }
 
     $modal_edit.addEventListener('show.bs.modal', async evt => {
       $modal_edit.querySelectorAll('input').forEach($input => {

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Inmobiliaria.Models;
 using Inmobiliaria.Interfaces;
 using Inmobiliaria.Models.ViewModels;
+using Inmobiliaria.Repositories;
 
 namespace Inmobiliaria.Controllers;
 
@@ -15,15 +16,16 @@ public class ContratoController(IRepository<Contrato> Repository) : Controller
   [HttpGet]
   public IActionResult Index()
   {
-    var elements = _userRepository.ReadAll();
-
-    return View(elements);
+    return View();
   }
 
   [HttpGet]
-  public IActionResult GetElement(Guid Id)
+  public IActionResult GetContracts(string Entity, string? Nombre, int? Dni)
   {
-    var element = _userRepository.ReadOne(("id", Id)).Entity;
+    object value = (Nombre is not null ? Nombre : Dni)!;
+    string query = $"SELECT a.id, a.id_propietario, id_inquilino, id_inmueble, dni_propietario_snapshot, dni_inquilino_snapshot, b.nombre AS nombre_propietario, c.nombre AS nombre_inquilino, b.apellido AS apellido_propietario, c.apellido AS apellido_inquilino, d.direccion AS direccion, coordenadas_snapshot, dia_de_inicio, dia_de_finalizacion, dia_de_cierre, precio_mensual, dni_usuario_apertura, dni_usuario_cierre, a.estado FROM contratos AS a INNER JOIN propietarios AS b ON a.id_propietario = b.id INNER JOIN inquilinos AS c ON a.id_inquilino = c.id INNER JOIN inmuebles AS d ON a.id_inmueble = d.id WHERE {(Entity == "propietario" ? "b" : "c")}.{(Nombre is not null ? "nombre" : "dni")} LIKE @value;";
+
+    var element = _userRepository.CustomQuery(query, value);
 
     if (element == null) return NotFound();
 
