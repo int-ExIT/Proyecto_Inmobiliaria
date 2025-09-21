@@ -4,9 +4,9 @@ using Inmobiliaria.Utils;
 
 namespace Inmobiliaria.Models;
 
-[Table("usuarios")] public class Usuario(Guid Id, int Dni, string Nombre, string Apellido, long Contacto, string Mail, string Rol, bool Estado)
+[Table("usuarios")] public class Usuario(int Id, int Dni, string Nombre, string Apellido, long Contacto, string Mail, string Rol, bool Estado)
 {
-  [Col("id", true)] public Guid Id { get; set; } = Id;
+  [Col("id", true)] public int Id { get; set; } = Id;
   [Col("dni", true, 1)] public int Dni { get; set; } = Dni;
   [Col("nombre")] public string? Nombre { get; set; } = Nombre;
   [Col("apellido")] public string? Apellido { get; set; } = Apellido;

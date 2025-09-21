@@ -4,10 +4,10 @@ using Inmobiliaria.Utils;
 
 namespace Inmobiliaria.Models;
 
-[Table("inmuebles")] public class Inmueble(Guid Id, Guid IdPropietario, string Direccion, string TipoDeUso, string Tipo, int NumeroDeCuartos, decimal Coordenadas, decimal Precio, bool Estado)
+[Table("inmuebles")] public class Inmueble(int Id, int IdPropietario, string Direccion, string TipoDeUso, string Tipo, int NumeroDeCuartos, decimal Coordenadas, decimal Precio, bool Estado)
 {
-  [Col("id", true)] public Guid Id { get; set; } = Id;
-  [Col("id_propietario")] public Guid IdPropietario { get; set; } = IdPropietario;
+  [Col("id", true)] public int Id { get; set; } = Id;
+  [Col("id_propietario")] public int IdPropietario { get; set; } = IdPropietario;
   [Col("direccion")] public string Direccion { get; set; } = Direccion;
   [Col("tipo_de_uso")] public string TipoDeUso { get; set; } = TipoDeUso;
   [Col("tipo")] public string Tipo { get; set; } = Tipo;

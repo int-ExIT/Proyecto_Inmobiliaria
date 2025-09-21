@@ -20,12 +20,38 @@ public class ContratoController(IRepository<Contrato> Repository) : Controller
   }
 
   [HttpGet]
-  public IActionResult GetContracts(string Entity, string? Nombre, int? Dni)
+  public IActionResult GetContracts(string Entity, int Dni)
   {
-    object value = (Nombre is not null ? Nombre : Dni)!;
-    string query = $"SELECT a.id, a.id_propietario, id_inquilino, id_inmueble, dni_propietario_snapshot, dni_inquilino_snapshot, b.nombre AS nombre_propietario, c.nombre AS nombre_inquilino, b.apellido AS apellido_propietario, c.apellido AS apellido_inquilino, d.direccion AS direccion, coordenadas_snapshot, dia_de_inicio, dia_de_finalizacion, dia_de_cierre, precio_mensual, dni_usuario_apertura, dni_usuario_cierre, a.estado FROM contratos AS a INNER JOIN propietarios AS b ON a.id_propietario = b.id INNER JOIN inquilinos AS c ON a.id_inquilino = c.id INNER JOIN inmuebles AS d ON a.id_inmueble = d.id WHERE {(Entity == "propietario" ? "b" : "c")}.{(Nombre is not null ? "nombre" : "dni")} LIKE @value;";
+    Dictionary<string, object> filter = new() { { "@value", Dni } };
+    string query = $"SELECT a.*, b.nombre AS nombre_propietario, c.nombre AS nombre_inquilino, b.apellido AS apellido_propietario, c.apellido AS apellido_inquilino, d.direccion AS direccion FROM contratos AS a INNER JOIN propietarios AS b ON a.id_propietario = b.id INNER JOIN inquilinos AS c ON a.id_inquilino = c.id INNER JOIN inmuebles AS d ON a.id_inmueble = d.id WHERE {(Entity == "propietario" ? "b" : "c")}.dni LIKE @value;";
 
-    var element = _userRepository.CustomQuery(query, value);
+    var element = _userRepository.CustomQuery(query, filter);
+
+    if (element == null) return NotFound();
+
+    return Json(new { Success = true, Body = element });
+  }
+
+  [HttpGet]
+  public IActionResult GetTenants(string Name)
+  {
+    GenericRepository<Inquilino> inquilinoRepository = new();
+    (string, object) filter = ("nombre", Name);
+
+    var element = inquilinoRepository.FindLike(filter);
+
+    if (element == null) return NotFound();
+
+    return Json(new { Success = true, Body = element });
+  }
+
+  [HttpGet]
+  public IActionResult GetOwners(string Name)
+  {
+    GenericRepository<Propietario> propietarioRepository = new();
+    (string, object) filter = ("nombre", Name);
+
+    var element = propietarioRepository.FindLike(filter);
 
     if (element == null) return NotFound();
 
@@ -34,23 +60,61 @@ public class ContratoController(IRepository<Contrato> Repository) : Controller
 
   [HttpPost]
   [ValidateAntiForgeryToken]
-  public IActionResult EditElement(ContratoEditVm vm)
+  public IActionResult EditElement([FromBody] ContratoEditVm vm)
   {
     if (!ModelState.IsValid) return BadRequest(ModelState);
 
-    var element = _userRepository.ReadOne(("id", vm.Id)).Entity;
+    Dictionary<string, object> filter = new() { { "@value", vm.Id } };
+    string query = $"SELECT a.*, b.nombre AS nombre_propietario, c.nombre AS nombre_inquilino, b.apellido AS apellido_propietario, c.apellido AS apellido_inquilino, d.direccion AS direccion FROM contratos AS a INNER JOIN propietarios AS b ON a.id_propietario = b.id INNER JOIN inquilinos AS c ON a.id_inquilino = c.id INNER JOIN inmuebles AS d ON a.id_inmueble = d.id WHERE a.id = @value;";
 
-    if (element == null) return NotFound(new { Success = false, Message = "Item not found." });
+    var element = _userRepository.CustomQuery(query, filter).FirstOrDefault();
+
+    if (element is null) return NotFound(new { Success = false, Message = "Item not found." });
+
+    if (vm.DiaDeFinalizacion != element.DiaDeFinalizacion)
+    {
+      string flag = CheckEndDate(vm.DiaDeFinalizacion, vm.Id, element.IdInmueble);
+
+      if (flag != "-" && flag != vm.DiaDeFinalizacion.ToString("dd/MM/yyyy")) return Ok(new
+      {
+        Success = false,
+        Message = $"Invalid date: {flag}"
+      });
+    }
 
     Dictionary<string, object> newData = new()
     {
-      { "dia_de_finalizacion", vm.DiaDeFinalizacion },
-      { "precio_mensual", vm.PrecioMensual },
+      {"id", vm.Id},
+      {"dia_de_finalizacion", vm.DiaDeFinalizacion},
+      {"precio_mensual", vm.PrecioMensual},
+      {"dni_usuario_cierre", vm.DniUsuarioCierre},
     };
     int affectedRows = _userRepository.Update(newData);
     Console.WriteLine($"Rows affected: {affectedRows}");
 
     return Ok(new { Success = true, Body = vm });
+  }
+
+  private string CheckEndDate(DateTime NuevaFecha, int IdContrato, int IdInmueble)
+  {
+    // Valores de Prueba:
+    // "2025/11/01" Ok.
+    // "2026/04/01" Ok.
+    // "2026/04/02" Error.
+    // "2026/09/01" Error.
+    Dictionary<string, object> filter = new()
+    {
+      { "@value",  IdInmueble},
+      { "@value1",  IdContrato},
+      { "@value2",  NuevaFecha.ToString("yyyy/MM/dd")}
+    };
+    string query = "SELECT a.*, b.nombre AS nombre_propietario, c.nombre AS nombre_inquilino, b.apellido AS apellido_propietario, c.apellido AS apellido_inquilino, d.direccion AS direccion FROM contratos AS a INNER JOIN propietarios AS b ON a.id_propietario = b.id INNER JOIN inquilinos AS c ON a.id_inquilino = c.id INNER JOIN inmuebles AS d ON a.id_inmueble = d.id WHERE a.estado NOT IN ('finalizado', 'cancelado') AND a.id_inmueble = @value AND a.id != @value1 AND a.dia_de_inicio <= @value2 ORDER BY a.dia_de_inicio ASC LIMIT 1;";
+
+    var element = _userRepository.CustomQuery(query, filter).FirstOrDefault();
+
+    if (element is null) return "-";
+
+    return element.DiaDeInicio.ToString("dd/MM/yyyy");
   }
 
   [HttpPost]

@@ -52,20 +52,11 @@ public class ClassData<T>
       var columnNameExpr = Expression.Constant(columnName);
       // 4.4. Crear la Exprecion de Acceso a la Propiedad: Esto representa hacer "record['NameCol1']"
       var indexerExpr = Expression.Property(paramLambda, "Item", columnNameExpr);
+
+      // 4.5. Setear el tipo de la Exprecion de Acceso:
+      Expression isDBNull = Expression.Equal(indexerExpr, Expression.Constant(DBNull.Value));
       Expression ifFalse = Expression.Convert(indexerExpr, p.ParameterType); //Determino el tipo de la exprecion
-
-      // 4.5. Soporte para Guid y Guid?. Necesario SOLO para bases de datos con ID de tipo UUID.
-      var isDBNull = Expression.Equal(indexerExpr, Expression.Constant(DBNull.Value)); //Manejo de DBNull
-      if (p.ParameterType == typeof(Guid) || p.ParameterType == typeof(Guid?))
-      {
-        var guidCtor = typeof(Guid).GetConstructor([typeof(byte[])]) ?? throw new InvalidOperationException("Guid(byte[]) builder not found");
-        var toGuid = Expression.New(guidCtor, Expression.Convert(indexerExpr, typeof(byte[])));
-
-        ifFalse = (p.ParameterType == typeof(Guid)) ? toGuid : Expression.Convert(toGuid, typeof(Guid?));
-      }
-
-      // 4.6. Setear el tipo de la Exprecion de Acceso:
-      var valueExpr = Expression.Condition(isDBNull, Expression.Default(p.ParameterType), ifFalse);
+      Expression valueExpr = Expression.Condition(isDBNull, Expression.Default(p.ParameterType), ifFalse);
       argsExpr[i] = valueExpr;
     }
 

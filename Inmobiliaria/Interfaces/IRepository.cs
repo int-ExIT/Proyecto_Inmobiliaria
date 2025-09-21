@@ -14,7 +14,7 @@ public interface IRepository<T>
 
   IEnumerable<T> FindLike((string Key, object Value) Filter);
 
-  IEnumerable<T> CustomQuery(string Query, object Value);
+  IEnumerable<T> CustomQuery(string Query, Dictionary<string, object> Filter);
 
   int Update(Dictionary<string, object> NewData);
 

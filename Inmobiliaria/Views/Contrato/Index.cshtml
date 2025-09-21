@@ -5,71 +5,94 @@
 }
 
 <div class="container-fluid text-center d-flex gap-2">
-  @* Modal de edicion de datos *@
-  @await Html.PartialAsync("_EditModal", new Inmobiliaria.Models.ViewModels.ContratoEditVm())
-  @* Modal de edicion de estado *@
-  @await Html.PartialAsync("_EditStateModal")
-  @* Modal de informacion *@
+  @* Modal de informacion y edicion *@
   @await Html.PartialAsync("_ViewInfoModal")
 
   <div class="d-flex flex-column col-4 bg-dark p-3 text-white gap-2">
+    @* --------------------------------------------------------- TITLE --- *@
     <div>
       <h1>Bienvenido a Contratos</h1>
     </div>
 
-    <form action="" class="d-flex gap-3 justify-content-center">
+    @* -------------------------------------------------------- INPUTS --- *@
+    <form class="d-flex gap-3 justify-content-center">
+      @Html.AntiForgeryToken()
+
       <div class="d-flex flex-column align-items-start gap-2">
         <label for="search-propietario">Propietario </label>
-        <input type="text" style="width: 150px;" name="search-propietario" id="search-propietario">
+        <input type="text" style="width: 150px;" name="search-propietario" id="search-propietario" autocomplete="off">
       </div>
 
       <div class="d-flex flex-column align-items-start gap-2">
         <label for="search-inquilino">Inquilino </label>
-        <input type="text" style="width: 150px;" name="search-inquilino" id="search-inquilino">
+        <input type="text" style="width: 150px;" name="search-inquilino" id="search-inquilino" autocomplete="off">
       </div>
     </form>
 
-    <table class="table table-dark">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Apellido</th>
-          <th>DNI</th>
-        </tr>
-      </thead>
-      <tbody id="body-table">
-      </tbody>
-    </table>
-  </div>
-
-  <div class="div-body d-flex flex-wrap justify-content-start"></div>
-
-  <template id="my-template">
-    <div class="card border-dark col-5 m-1">
-      <div class="card-header bg-dark text-white">
-        <h5 class="card-prop card-title mb-0"></h5>
-        <small class="card-date mb-0"></small>
+    @* ------------------------------------------------------- FILTERS --- *@
+    <div class="d-flex justify-content-center gap-2 m-0 p-0">
+      <div>
+        <label for="finalizado" class="m-0 p-0">Finalizados</label>
+        <input type="checkbox" name="finalizado" id="finalizado" class="m-0 p-0">
       </div>
-
-      <div class="card-body div-info text-start d-flex">
-        <div class="d-flex flex-column col-6">
-          <h6 class="card-direccion card-text"></h6>
-        </div>
+      <div>
+        <label for="vigente" class="m-0 p-0">Vigentes</label>
+        <input type="checkbox" name="vigente" id="vigente" class="m-0 p-0">
       </div>
-
-      <div class="card-footer div-action border-dark bg-dark text-white">
-        <button class="btn btn-sm bg-primary text-white mx-1" data-bs-toggle="modal" data-bs-target="#viewInfoModal">
-          Ver mas
-        </button>
-        <button class="btn btn-sm bg-success text-white mx-1" data-bs-toggle="modal" data-bs-target="#editModal">
-          Editar
-        </button>
-        <button class="btn-state btn btn-sm bg-danger text-white mx-1" data-bs-toggle="modal"
-          data-bs-target="#editStateModal">
-          Anular contrato
-        </button>
+      <div>
+        <label for="cancelado" class="m-0 p-0">Cancelados</label>
+        <input type="checkbox" name="cancelado" id="cancelado" class="m-0 p-0">
+      </div>
+      <div>
+        <label for="pendiente" class="m-0 p-0">Pendientes</label>
+        <input type="checkbox" name="pendiente" id="pendiente" class="m-0 p-0">
       </div>
     </div>
+
+    @* ---------------------------------------------------------- DATA --- *@
+    <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+      <table class="table table-dark" style="overflow: auto;">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>DNI</th>
+          </tr>
+        </thead>
+        <tbody id="body-table">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="div-body d-flex flex-wrap justify-content-start">
+    <ul class="list list-unstyled p-0 m-0"></ul>
+  </div>
+
+  <template id="my-template">
+    <li>
+      @* -------------------------------------------------------- CARD --- *@
+      <div class="card border-dark m-1 d-flex" style="width: 900px; height: 65px;">
+        @* ----------------------------------------------- CARD-HEADER --- *@
+        <div class="card-header d-flex position-relative bg-dark text-white h-100 w-100">
+          @* --------------------------------------- CARD-HEADER-TITLE --- *@
+          <div class="my-auto d-flex flex-column position-absolute start-0 mx-4">
+            <h5 class="card-prop card-title mb-0"></h5>
+            <small class="card-date mb-0"></small>
+          </div>
+          @* ------------------------------------- CARD-HEADER-ACTIONS --- *@
+          <div class="my-2 d-flex position-absolute end-0 mx-2">
+            <button class="btn-info btn btn-sm bg-primary text-white mx-1" data-bs-toggle="modal"
+              data-bs-target="#viewInfoModal">
+              Ver mas
+            </button>
+          </div>
+        </div>
+        <div class="card-body position-absolute start-0 h-100 p-0">
+          <p class="p-2 m-0"> </p>
+        </div>
+      </div>
+    </li>
   </template>
 </div>
 @section Scripts
@@ -77,57 +100,165 @@
   @await Html.PartialAsync("_ValidationsScriptsPartial")
 
   <script type="module">
-    /* const $modal_edit = document.querySelector('#editModal');
-    const $modal_state = document.querySelector('#editStateModal');
-    const $btn_confirm = document.querySelector('#confirm-state');
-    const $form_edit = document.querySelector('#edit-form'); */
-
-    const $body = document.querySelector('.div-body');
+    // ELEMENTS MODAL
+    const $modal_info = document.querySelector('#viewInfoModal');
+    const $modal_btn_edit = $modal_info.querySelector('.moda-btn-edit');
+    const $modal_btn_send = $modal_info.querySelector('.moda-btn-send');
+    // STRUCTURES
+    const $list = document.querySelector('.list');
+    const $table = document.querySelector('#body-table');
     const $template = document.querySelector('#my-template');
+    // INPUTS
     const $propietarios = document.querySelector('#search-propietario');
     const $inquilinos = document.querySelector('#search-inquilino');
-    const $table = document.querySelector('#body-table');
+    const $checkboxes = document.querySelectorAll('input[type="checkbox"]');
 
-    $propietarios.addEventListener('click', async evt => {
-      const elements = await getContracts('propietario', '');
-      buildTable(elements);
+    let USER_CONTRACTS = [];
+
+    $checkboxes.forEach($box => {
+      $box.addEventListener('click', function () {
+        if (!this.checked) {
+          if (USER_CONTRACTS.length > 0) buildList(USER_CONTRACTS);
+          return;
+        }
+
+        $checkboxes.forEach($el => $el.checked = this.name === $el.name);
+
+        const elements = USER_CONTRACTS?.filter(el =>
+          el.estado === this.name
+        );
+
+        if (USER_CONTRACTS.length > 0) buildList(elements);
+      });
     });
 
-    $inquilinos.addEventListener('click', async evt => {
-      const elements = await getContracts('inquilino', '');
-      buildTable(elements);
+    $propietarios.addEventListener('click', getAllElements);
+
+    $inquilinos.addEventListener('click', getAllElements);
+
+    $propietarios.addEventListener('keyup', getElementsByLikeSelection);
+
+    $inquilinos.addEventListener('keyup', getElementsByLikeSelection);
+
+    $modal_info.addEventListener('show.bs.modal', evt => {
+      const $btn_info = evt.relatedTarget;
+      const $text_space = $modal_info.querySelectorAll('.value');
+      const $header = $modal_info.querySelector('.modal-header');
+      const $h3 = $modal_info.querySelector('h3');
+
+      const idContract = $btn_info.id;
+      const element = USER_CONTRACTS.find(el => +el.id === +idContract);
+      const flag = element.estado === 'vigente' || element.estado === 'pendiente';
+      const states = {
+        finalizado: 'bg-success',
+        cancelado: 'bg-danger',
+        pendiente: 'bg-info',
+        vigente: 'bg-warning'
+      };
+
+      $header.className = `modal-header ${states[element.estado]}`;
+      $h3.textContent = `${element.nombrePropietario} ${element.apellidoPropietario} - ${element.nombreInquilino} ${element.apellidoInquilino}`;
+
+      $text_space.forEach($element => {
+        const { id } = $element;
+        const data = element[id];
+        const flagClass = $element.classList.contains('date');
+
+        if ($element.tagName === 'SPAN') {
+          if (id !== 'diaDeCierre') return $element.textContent = (flagClass) ? formatDate(data) : data;
+
+          $element.style.display = (element.estado === 'cancelado')
+            ? 'block'
+            : 'none';
+          $element.innerHTML = `Fecha de cancelacion: <span class="fw-bold">${formatDate(data)}</span>.`;
+        } else {
+          $element.value = (flagClass) ? formatDate(data) : data;
+          $element.readOnly = true;
+          $element.style.width = (($element.value.length + 1) * 10) + "px";
+        }
+      });
+
+      $modal_btn_edit.style.display = (flag) ? 'block' : 'none';
+      $modal_btn_edit.setAttribute('data-id', idContract);
+      $modal_btn_send.setAttribute('data-id', idContract);
     });
 
-    $propietarios.addEventListener('keyup', async evt => {
-      // Ignorar teclas de control (Shift, Alt, Ctrl, etc.)
-      if (evt.ctrlKey || evt.altKey || evt.metaKey) return;
+    $modal_btn_edit.addEventListener('click', buttonHandler);
 
-      // Ignorar teclas que no son un solo carácter (ej: "Shift", "ArrowUp")
-      if (evt.key.length > 1 && evt.key !== "Backspace") return;
+    $modal_btn_send.addEventListener('click', async function () {
+      if ($modal_btn_edit.textContent === 'Modificar') return;
 
-      // Validar solo letras, números y backspace
-      if (!/^[A-Za-z]$/.test(evt.key) && evt.key !== "Backspace") return;
+      const $span_error = $modal_info.querySelector('.msj-error');
+      const $inputs = $modal_info.querySelectorAll('input');
 
-      const elements = await getContracts('propietario', $propietarios.value);
-      buildTable(elements);
-    });
+      const element = { id: +this.getAttribute('data-id') };
+      const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
-    $inquilinos.addEventListener('keyup', async evt => {
-      if (evt.ctrlKey || evt.altKey || evt.metaKey) return;
+      $inputs.forEach($input => {
+        const { id, value, classList } = $input;
 
-      if (evt.key.length > 1 && evt.key !== "Backspace") return;
+        element[id] = (classList.contains('date'))
+          ? new Date(value).toISOString()
+          : value;
+      });
 
-      if (!/^[A-Za-z]$/.test(evt.key) && evt.key !== "Backspace") return;
-
-      const elements = await getContracts('inquilino', $inquilinos.value);
-      buildTable(elements);
-    });
-
-    async function getContracts(entity, name, dni) {
       try {
-        const response = await fetch(`/Contrato/GetContracts?Entity=${entity}&${(dni ? `Dni=${dni}` : `Nombre=${name}`)}`);
+        const response = await fetch('/Contrato/EditElement', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'RequestVerificationToken': token
+          },
+          body: JSON.stringify(element)
+        });
 
-        if (!response.ok) throw new Error('No se pudo recuperar el elemento');
+        if (!response.ok) throw new Error('Response 404');
+
+        const { success, message } = await response.json();
+
+        if (!success) return $span_error.innerHTML = `La fecha de cierre debe ser igual o previa a la fecha <span class="fw-bold">${message.split(':')[1].trim()}</span>.`;
+
+        const contractEdit = USER_CONTRACTS.find(el => el.id === element.id);
+
+        for (let [key, value] of Object.entries(element)) {
+          contractEdit[key] = value;
+        }
+
+        USER_CONTRACTS.map(el => {
+          return (el.id === contractEdit.id) ? contractEdit : el;
+        });
+
+        buttonHandler(element);
+      } catch (err) {
+        console.error('Failed update ' + err.message);
+
+        alert('Failed update');
+      }
+    });
+
+    async function getContracts(entity, dni) {
+      try {
+        const response = await fetch(`/Contrato/GetContracts?Entity=${entity}&Dni=${dni}`);
+
+        if (!response.ok) throw new Error('Item not found');
+
+        const { body } = await response.json();
+
+        return body;
+      } catch (err) {
+        console.error('Failed recovery ' + err.message);
+
+        alert('Failed recovery.');
+      }
+    }
+
+    async function getActors(name) {
+      try {
+        const is = document.activeElement === $inquilinos;
+        const endpoint = `Get${(is ? 'Tenants' : 'Owners')}`;
+        const response = await fetch(`/Contrato/${endpoint}?Name=${name}`);
+
+        if (!response.ok) throw new Error('Item not found');
 
         const { body } = await response.json();
 
@@ -143,192 +274,179 @@
       $table.querySelectorAll('tr').forEach($tr => $tr.remove());
 
       if (elements.length === 0) {
-        const $row = document.createElement('tr');
-        const $result = document.createElement('td');
+        const $tr = document.createElement('tr');
+        const $td = document.createElement('td');
 
-        $result.textContent = 'No hay resultados...';
-        $row.appendChild($result);
+        $td.textContent = 'No hay resultados...';
+        $td.colSpan = '3';
 
-        $table.appendChild($row);
+        $tr.appendChild($td);
+        $table.appendChild($tr);
+
         return;
       }
 
       const $fragment = document.createDocumentFragment();
 
       for (let element of elements) {
-        if (
-          $fragment.getElementById(element.dniInquilino) !== null ||
-          $fragment.getElementById(element.dniPropietario) !== null
-        ) continue;
+        const $td_last_name = document.createElement('td');
+        const $td_name = document.createElement('td');
+        const $td_dni = document.createElement('td');
+        const $tr = document.createElement('tr');
 
-        const $row = document.createElement('tr');
+        const flag = document.activeElement === $propietarios;
+        const { apellido, nombre, dni } = element;
 
-        $row.addEventListener('click', async function () {
-          const elements = await getContracts(this.dataType, '', this.id);
+        $td_last_name.textContent = apellido;
+        $td_name.textContent = nombre;
+        $td_dni.textContent = dni;
+        $tr.dataType = (flag) ? 'propietario' : 'inquilino';
+        $tr.id = dni;
+
+        $tr.appendChild($td_name);
+        $tr.appendChild($td_last_name);
+        $tr.appendChild($td_dni);
+
+        $tr.addEventListener('click', async function () {
+          USER_CONTRACTS = await getContracts(this.dataType, this.id);
+          let filter = '';
+
+          $checkboxes.forEach($box => {
+            filter = ($box.checked) ? $box.name : filter;
+          });
+
+          const elements = (!filter)
+            ? USER_CONTRACTS
+            : USER_CONTRACTS.filter(el => el.estado === filter);
           buildList(elements);
         });
 
-        const $nombre = document.createElement('td');
-        const $apellido = document.createElement('td');
-        const $dni = document.createElement('td');
-
-        if (document.activeElement === $propietarios) {
-          $nombre.textContent = element.nombrePropietario;
-          $apellido.textContent = element.apellidoPropietario;
-          $dni.textContent = element.dniPropietario;
-          $row.dataType = 'propietario';
-          $row.id = element.dniPropietario;
-        } else if (document.activeElement === $inquilinos) {
-          $nombre.textContent = element.nombreInquilino;
-          $apellido.textContent = element.apellidoInquilino;
-          $dni.textContent = element.dniInquilino;
-          $row.dataType = 'inquilino';
-          $row.id = element.dniInquilino;
-        }
-
-        $row.appendChild($nombre);
-        $row.appendChild($apellido);
-        $row.appendChild($dni);
-
-        $fragment.appendChild($row);
+        $fragment.appendChild($tr);
       }
 
       $table.appendChild($fragment);
     }
 
     function buildList(elements) {
+      $list.querySelectorAll('li').forEach($li => $li.remove());
+
+      if (elements.length === 0) {
+        const $card = $template.content.cloneNode(true);
+        const $header = $card.querySelector('.card-header');
+
+        $header.firstElementChild.classList.replace('start-0', 'end-0');
+
+        $card.querySelector('.card-title').textContent = 'Sin Resultados';
+        $card.querySelector('.card-date').textContent = '-';
+        $card.querySelector('.card-body').classList.add('bg-primary');
+        $card.querySelectorAll('.btn').forEach($btn =>
+          $btn.style.display = 'none'
+        );
+
+        $list.appendChild($card);
+
+        return;
+      }
+
       const $fragment = document.createDocumentFragment();
 
       for (let element of elements) {
-        const $card = $template.content.cloneNode(true);
-        console.log($card);
+        const {
+          diaDeFinalizacion: diaFin,
+          diaDeInicio: diaInicio,
+          diaDeCierre: diaCierre,
+          apellidoPropietario,
+          nombrePropietario,
+          apellidoInquilino,
+          nombreInquilino,
+          estado,
+          id,
+        } = element;
 
-        const nameP = `${element.nombrePropietario} ${element.apellidoPropietario}`;
-        const nameI = `${element.nombreInquilino} ${element.apellidoInquilino}`;
-        const date = `${element.diaDeInicio} - ${element.diaDeFinalizacion}`;
+        const $card = $template.content.cloneNode(true);
+
+        const date = `${formatDate(diaInicio)} - ${(estado === 'cancelado' ? formatDate(diaCierre) : formatDate(diaFin))}`;
+        const nameP = `${nombrePropietario} ${apellidoPropietario}`;
+        const nameI = `${nombreInquilino} ${apellidoInquilino}`;
+        const states = {
+          finalizado: 'bg-success',
+          cancelado: 'bg-danger',
+          pendiente: 'bg-info',
+          vigente: 'bg-warning'
+        };
 
         $card.querySelector('.card-title').textContent = `${nameP} - ${nameI}`;
         $card.querySelector('.card-date').textContent = date;
-        $card.querySelector('.card-direccion').textContent = `En calle ${element.direccion}`;
+        if (estado === 'cancelado') $card.querySelector('.card-date').classList.add('text-danger');
+        $card.querySelector('.card-body').classList.add(states[estado]);
+        $card.querySelector('.btn-info').id = id;
 
         $fragment.appendChild($card);
       }
-      $body.appendChild($fragment);
+
+      $list.appendChild($fragment);
     }
 
-    $modal_edit.addEventListener('show.bs.modal', async evt => {
-      $modal_edit.querySelectorAll('input').forEach($input => {
-        if ($input.name !== '__RequestVerificationToken') $input.value = "";
+    function buttonHandler(prop) {
+      $modal_info.querySelector('.msj-error').textContent = '';
+      
+      const $inputs = $modal_info.querySelectorAll('input');
+      const idContract = $modal_btn_edit.getAttribute('data-id');
+      const element = (!prop?.isTrusted)
+        ? prop
+        : USER_CONTRACTS.find(el => +el.id === +idContract);
+      const flag = $modal_btn_edit.textContent === 'Modificar';
+
+      $inputs.forEach($input => {
+        $input.classList.replace(
+          (flag ? 'bg-warning' : 'bg-info'),
+          (flag ? 'bg-info' : 'bg-warning'),
+        );
+        $input.style.width = (($input.value.length + 1) * 10) + "px";
+        $input.readOnly = !flag;
+
+        if (!$input.classList.contains('date')) return;
+
+        $input.type = (flag) ? 'date' : 'text';
+
+        if (!flag) $input.value = formatDate(element[$input.id]);
+        else $input.value = element[$input.id].substring(0, 10);
       });
 
-      const $btn_edit = evt.relatedTarget;
-      const coordenadas = $btn_edit.getAttribute('data-coor');
+      $modal_btn_send.style.display = (flag) ? 'block' : 'none';
+      $modal_btn_edit.textContent = (flag) ? 'Cancelar' : 'Modificar';
+    }
 
-      try {
-        const response = await fetch(`/Inmueble/GetElement?Coordenadas=${coordenadas}`);
+    async function getElementsByLikeSelection(evt) {
+      // Ignorar teclas de control (Shift, Alt, Ctrl, etc.)
+      if (evt.ctrlKey || evt.altKey || evt.metaKey) return;
 
-        if (!response.ok) throw new Error('No se pudo recuperar al usuario');
+      // Ignorar teclas que no son un solo carácter (ej: "Shift", "ArrowUp")
+      if (evt.key.length > 1 && evt.key !== "Backspace") return;
 
-        const { body } = await response.json();
+      // Validar solo letras, números y backspace
+      if (!/^[A-Za-z]$/.test(evt.key) && evt.key !== "Backspace") return;
 
-        // Agregar datos al form:
-        $modal_edit.querySelector('input[name="Coordenadas"]').value = parseFloat(body.coordenadas).toFixed(6);
-        $modal_edit.querySelector('input[name="Direccion"]').value = body.direccion;
-        $modal_edit.querySelector('input[name="TipoDeUso"]').value = body.tipoDeUso;
-        $modal_edit.querySelector('input[name="Tipo"]').value = body.tipo;
-        $modal_edit.querySelector('input[name="NumeroDeCuartos"]').value = body.numeroDeCuartos;
-        $modal_edit.querySelector('input[name="Precio"]').value = body.precio;
-      } catch (err) {
-        console.error('Failed recovery ' + err.message);
+      $list.querySelectorAll('li').forEach($li => $li.remove());
+      USER_CONTRACTS = [];
 
-        bootstrap.Modal.getInstance($modal_edit)?.hide();
+      const elements = await getActors(evt.target.value);
 
-        alert('Failed recovery.');
-      }
-    });
+      buildTable(elements);
+    }
 
-    $form_edit.addEventListener('submit', async evt => {
-      evt.preventDefault();
+    async function getAllElements(evt) {
+      const elements = await getActors(evt.target.value);
 
-      const formData = new FormData($form_edit);
+      buildTable(elements);
+    }
 
-      try {
-        const response = await fetch('/Inmueble/EditElement', {
-          method: 'POST',
-          body: formData
-        });
-
-        if (!response.ok) throw new Error('Failed update');
-
-        const { body } = await response.json();
-        const $card_edit = document.querySelector(`div[data-coor="${parseFloat(body.coordenadas).toFixed(6)}"]`);
-
-        $card_edit.querySelector('.card-direccion').textContent = `Ubicado en ${body.direccion}`;
-        $card_edit.querySelector('.card-info').textContent = `${body.tipo} - ${body.tipoDeUso}`;
-        $card_edit.querySelector('.card-cuartos').textContent = `${body.numeroDeCuartos} ${(body.numeroDeCuartos == 1 ? 'habitacion' : 'habitaciones')}`;
-        $card_edit.querySelector('.card-precio').textContent = `$${body.precio}`;
-
-        console.log('Successful update');
-
-        bootstrap.Modal.getInstance($modal_edit).hide();
-      } catch (err) {
-        console.error('Failed update ' + err);
-
-        alert('Failed update');
-      }
-    });
-
-    $modal_state.addEventListener('show.bs.modal', async evt => {
-      const $btn_state = evt.relatedTarget;
-      const $h3 = $modal_state.querySelector('h3');
-      const coordenadas = $btn_state.getAttribute('data-coor');
-
-      try {
-        const response = await fetch(`/Inmueble/GetElement?Coordenadas=${coordenadas}`);
-
-        if (!response.ok) throw new Error('Failed selection');
-
-        const { body } = await response.json();
-
-        $modal_state.dataset.coordenadas = coordenadas;
-        $h3.textContent = `Esta por dar de ${(body.estado) ? 'baja' : 'alta'} al inmueble ubicado en calle ${body.direccion}.`;
-      } catch (err) {
-        console.error('Failed recovery ' + err.message);
-
-        bootstrap.Modal.getInstance($modal_state)?.hide();
-
-        alert('Failed recovery.');
-      }
-    });
-
-    $btn_confirm.addEventListener('click', async evt => {
-      const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
-      const coordenadas = $modal_state.dataset.coordenadas;
-
-      try {
-        const response = await fetch(`/Inmueble/EditState?Coordenadas=${coordenadas}`, {
-          method: 'POST',
-          headers: {
-            'RequestVerificationToken': token
-          }
-        });
-
-        if (!response.ok) throw new Error('Response 404');
-
-        const { state } = await response.json();
-        const $card_edit = document.querySelector(`div[data-coor="${coordenadas}"]`);
-        const $btn_state = $card_edit.querySelector('.btn-state');
-
-        $btn_state.textContent = `Dar de ${(state ? 'alta' : 'baja')}`;
-
-        console.log('Successful update');
-
-        bootstrap.Modal.getInstance($modal_state).hide();
-      } catch (err) {
-        console.error('Failed update ' + err.message);
-
-        alert('Failed update');
-      }
-    });
+    function formatDate(date) {
+      return date
+        .substring(0, 10)
+        .split('-')
+        .reverse()
+        .join('/');
+    }
   </script>
 }

@@ -218,7 +218,7 @@ public class GenericRepository<T> : IRepository<T>
     }
   }
 
-  public virtual IEnumerable<T> CustomQuery(string Query, object Value)
+  public virtual IEnumerable<T> CustomQuery(string Query, Dictionary<string, object> Filter) 
   {
     try
     {
@@ -227,7 +227,10 @@ public class GenericRepository<T> : IRepository<T>
 
       // Crear consulta
       using MySqlCommand command = new(Query, this.Connection);
-      command.Parameters.AddWithValue("@value", $"{Value}%");
+      foreach (var kv in Filter)
+      {
+        command.Parameters.AddWithValue($"{kv.Key}", $"{kv.Value}%");
+      }
       // Ejecutar consulta
       using var reader = command.ExecuteReader();
 

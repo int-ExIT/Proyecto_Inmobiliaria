@@ -4,11 +4,12 @@ using Inmobiliaria.Utils;
 
 namespace Inmobiliaria.Models;
 
-[Table("contratos")] public class Contrato(
-  Guid Id,
-  Guid IdPropietario,
-  Guid IdInquilino,
-  Guid IdInmueble,
+[Table("contratos")]
+public class Contrato(
+  int Id,
+  int IdPropietario,
+  int IdInquilino,
+  int IdInmueble,
   int DniPropietario,
   int DniInquilino,
   string NombrePropietario,
@@ -23,12 +24,13 @@ namespace Inmobiliaria.Models;
   decimal PrecioMensual,
   int DniUsuarioApertura,
   int DniUsuarioCierre,
-  string Estado)
+  string Estado
+)
 {
-  [Col("id", true)] public Guid Id { get; set; } = Id;
-  [Col("id_propietario")] public Guid IdPropietario { get; set; } = IdPropietario;
-  [Col("id_inquilino")] public Guid IdInquilino { get; set; } = IdInquilino;
-  [Col("id_inmueble")] public Guid IdInmueble { get; set; } = IdInmueble;
+  [Col("id", true)] public int Id { get; set; } = Id;
+  [Col("id_propietario")] public int IdPropietario { get; set; } = IdPropietario;
+  [Col("id_inquilino")] public int IdInquilino { get; set; } = IdInquilino;
+  [Col("id_inmueble")] public int IdInmueble { get; set; } = IdInmueble;
   [Col("dni_propietario_snapshot")] public int DniPropietario { get; set; } = DniPropietario;
   [Col("dni_inquilino_snapshot")] public int DniInquilino { get; set; } = DniInquilino;
   [Col("nombre_propietario")] public string NombrePropietario { get; set; } = NombrePropietario;

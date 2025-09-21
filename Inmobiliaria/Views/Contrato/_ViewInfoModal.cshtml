@@ -2,13 +2,60 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Contrato</h5>
+        <h3 class="modal-title"></h3>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
 
-      <div class="modal-body text-start bg-dark text-white">
-        <div class="mb-3 text-center">
-          <h6>En desarrollo...</h6>
+      <div class="modal-body text-start">
+        <div class="modal-text mb-3 text-start text-black fs-5">
+          <p>
+            En la ciudad de San Luis, comparecen, por una parte el/la propietario/a <span id="nombrePropietario"
+              class="value bg-warning"></span> <span id="apellidoPropietario" class="value bg-warning"></span>,
+            identificado con DNI N° <span id="dniPropietario" class="value bg-warning"></span>, y por la otra el/la
+            inquilino/a <span id="nombreInquilino" class="value bg-warning"></span> <span id="apellidoInquilino"
+              class="value bg-warning"></span>, identificado con DNI N° <span id="dniInquilino"
+              class="value bg-warning"></span>.
+          </p>
+
+          <p>
+            Ambas partes acuerdan celebrar el presente Contrato de Locación sobre el inmueble ubicado en <span
+              id="direccion" class="value bg-warning"></span>, cuyas coordenadas geográficas son <span id="coordenadas"
+              class="value bg-warning"></span>.
+          </p>
+
+          <p>
+            El precio mensual de la renta se establece en la suma de $
+            <input type="text" step="0.01" id="precioMensual" name="precioMensual"
+              style="border: none; padding: 0px 3px;" class="value bg-warning" value="" /> (pesos argentinos), que el/la
+            inquilino/a se obliga a pagar al/la propietario/a en tiempo y forma.
+          </p>
+
+          <p>
+            El contrato será aperturado por el usuario con DNI N° <span id="dniUsuarioApertura"
+              class="value bg-warning"></span> y cerrado, en su caso, por el usuario con DNI N° <input type="text"
+              id="dniUsuarioCierre" name="dniUsuarioCierre" style="border: none; padding: 0px 3px;"
+              class="value bg-warning" value="" />.
+          </p>
+
+          <p>
+            El contrato tendrá vigencia desde el día <span id="diaDeInicio" class="value date bg-warning"></span> hasta
+            el día <input type="text" id="diaDeFinalizacion" name="diaDeFinalizacion" class="value date bg-warning"
+              style="border: none; padding: 0px 3px;" value="" />.
+          </p>
+
+          <p>
+            El estado actual del contrato es: <span id="estado" class="value bg-warning"></span>.</br><span id="diaDeCierre" class="value date" style="display: none;"></span>
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-footer d-flex position-relative bg-dark" style="height: 50px;">
+        <div class="position-absolute start-0">
+          <span class="msj-error text-white mx-2"></span>
+        </div>
+        <div class="btns d-flex position-absolute end-0 gap-2">
+          <button class="moda-btn-edit btn btn-sm bg-primary text-white border-dark mx-2" style="display: none;">Modificar</button>
+          <button class="moda-btn-send btn btn-sm bg-success text-white border-dark mx-2" style="display: none;">Guardar</button>
         </div>
       </div>
     </div>
