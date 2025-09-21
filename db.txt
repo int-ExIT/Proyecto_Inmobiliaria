@@ -9,7 +9,7 @@ USE inmobiliaria;
 
 -- Tabla de Usuario
 CREATE TABLE usuarios (
-    id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID(), 1)),
+    id int PRIMARY KEY auto_increment,
     dni INT NOT NULL UNIQUE,
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(50) NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE usuarios (
 
 -- Tabla de Propietarios
 CREATE TABLE propietarios (
-    id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID(), 1)),
+    id int PRIMARY KEY auto_increment,
     dni INT NOT NULL UNIQUE,
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(50) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE propietarios (
 
 -- Tabla de Inquilinos
 CREATE TABLE inquilinos (
-    id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID(), 1)),
+    id int PRIMARY KEY auto_increment,
     dni INT NOT NULL UNIQUE,
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(50) NOT NULL,
@@ -43,8 +43,8 @@ CREATE TABLE inquilinos (
 
 -- Tabla de Inmueble
 CREATE TABLE inmuebles (
-    id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID(), 1)),
-    id_propietario BINARY(16) NOT NULL,
+    id int PRIMARY KEY auto_increment,
+    id_propietario int NOT NULL,
     direccion VARCHAR(100) NOT NULL,
     tipo_de_uso ENUM('recidencial', 'comercial', 'industrial') NOT NULL,
     tipo ENUM('casa', 'departamento', 'oficina') NOT NULL,
@@ -57,19 +57,20 @@ CREATE TABLE inmuebles (
 
 -- Tabla intermedia para relación
 CREATE TABLE contratos (
-    id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID(), 1)),
-    id_propietario BINARY(16),
-    id_inquilino BINARY(16),
-    id_inmueble BINARY(16),
+    id int PRIMARY KEY auto_increment,
+    id_propietario int,
+    id_inquilino int,
+    id_inmueble int,
     dni_propietario_snapshot INT NOT NULL,
     dni_inquilino_snapshot INT NOT NULL,
     coordenadas_snapshot DECIMAL(10, 6) NOT NULL,
     dia_de_inicio DATE NOT NULL,
     dia_de_finalizacion DATE NOT NULL,
+    dia_de_cierre DATE,
     precio_mensual DECIMAL(9, 2) NOT NULL,
     dni_usuario_apertura INT NOT NULL,
     dni_usuario_cierre INT DEFAULT NULL,
-    estado ENUM('finalizado', 'cancelado', 'vigente') NOT NULL DEFAULT 'vigente',
+    estado ENUM('finalizado', 'cancelado', 'vigente', 'pendiente') NOT NULL DEFAULT 'vigente',
     FOREIGN KEY (id_propietario) REFERENCES propietarios(id) ON DELETE SET NULL,
     FOREIGN KEY (id_inquilino) REFERENCES inquilinos(id) ON DELETE SET NULL,
     FOREIGN KEY (id_inmueble) REFERENCES inmuebles(id) ON DELETE SET NULL
@@ -77,9 +78,9 @@ CREATE TABLE contratos (
 
 -- Tabla de pagos
 CREATE TABLE pagos (
-    id BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID(), 1)),
-    id_contrato BINARY(16) NOT NULL,
-    id_inquilino BINARY(16),
+    id int PRIMARY KEY auto_increment,
+    id_contrato int NOT NULL,
+    id_inquilino int,
     dni_inquilino INT NOT NULL,
     dia_pago DATE NOT NULL,
     detalle VARCHAR(200) NOT NULL,
@@ -91,41 +92,75 @@ CREATE TABLE pagos (
 
 INSERT INTO propietarios(id, dni, nombre, apellido, contacto, mail)
 VALUES
-(UUID_TO_BIN('0d51f797-89c2-11f0-8e96-38eaa7eb8a13', 1), 12345678, 'Juan', 'Pérez', 2664111111, 'juan.perez@mail.com'),
-(UUID_TO_BIN('0d51b72a-89c2-11f0-8e96-38eaa7eb8a13', 1), 22345678, 'María', 'González', 2664222222, 'maria.gonzalez@mail.com'),
-(UUID_TO_BIN('0d51cb94-89c2-11f0-8e96-38eaa7eb8a13', 1), 32345678, 'Carlos', 'López', 2664333333, 'carlos.lopez@mail.com'),
-(UUID_TO_BIN('0d51d219-89c2-11f0-8e96-38eaa7eb8a13', 1), 42345678, 'Laura', 'Martínez', 2664444444, 'laura.martinez@mail.com'),
-(UUID_TO_BIN('0d51d7f5-89c2-11f0-8e96-38eaa7eb8a13', 1), 52345678, 'Pedro', 'Fernández', 2664555555, 'pedro.fernandez@mail.com'),
-(UUID_TO_BIN('0d51dd0b-89c2-11f0-8e96-38eaa7eb8a13', 1), 62345678, 'Ana', 'Torres', 2664666666, 'ana.torres@mail.com'),
-(UUID_TO_BIN('0d51e24b-89c2-11f0-8e96-38eaa7eb8a13', 1), 72345678, 'Diego', 'Ramírez', 2664777777, 'diego.ramirez@mail.com'),
-(UUID_TO_BIN('0d51e75c-89c2-11f0-8e96-38eaa7eb8a13', 1), 82345678, 'Sofía', 'Moreno', 2664888888, 'sofia.moreno@mail.com'),
-(UUID_TO_BIN('0d51ed94-89c2-11f0-8e96-38eaa7eb8a13', 1), 92345678, 'Martín', 'Castro', 2664999999, 'martin.castro@mail.com'),
-(UUID_TO_BIN('0d51f2ea-89c2-11f0-8e96-38eaa7eb8a13', 1), 10345678, 'Lucía', 'Silva', 2664000000, 'lucia.silva@mail.com');
+(11, 12345678, 'Juan', 'Pérez', 2664111111, 'juan.perez@mail.com'),
+(12, 22345678, 'María', 'González', 2664222222, 'maria.gonzalez@mail.com'),
+(13, 32345678, 'Carlos', 'López', 2664333333, 'carlos.lopez@mail.com'),
+(14, 42345678, 'Laura', 'Martínez', 2664444444, 'laura.martinez@mail.com'),
+(15, 52345678, 'Pedro', 'Fernández', 2664555555, 'pedro.fernandez@mail.com'),
+(16, 62345678, 'Ana', 'Torres', 2664666666, 'ana.torres@mail.com'),
+(17, 72345678, 'Diego', 'Ramírez', 2664777777, 'diego.ramirez@mail.com'),
+(18, 82345678, 'Sofía', 'Moreno', 2664888888, 'sofia.moreno@mail.com'),
+(19, 92345678, 'Martín', 'Castro', 2664999999, 'martin.castro@mail.com'),
+(20, 10345678, 'Lucía', 'Silva', 2664000000, 'lucia.silva@mail.com');
 
 INSERT INTO inquilinos(id, dni, nombre, apellido, contacto, mail)
 VALUES
-(UUID_TO_BIN('0d6fa7d3-89c2-11f0-8e96-38eaa7eb8a13', 1), 50345678, 'Ramiro', 'Lucero', 2664211211, 'ramiro.lucero@mail.com'),
-(UUID_TO_BIN('0d6fbe3c-89c2-11f0-8e96-38eaa7eb8a13', 1), 51345678, 'Juana', 'Aguirre', 2664122222, 'juana.aguirre@mail.com'),
-(UUID_TO_BIN('0d6fc929-89c2-11f0-8e96-38eaa7eb8a13', 1), 97345678, 'Abigail', 'Carranza', 2664133233, 'abigail.carranza@mail.com'),
-(UUID_TO_BIN('0d6fce35-89c2-11f0-8e96-38eaa7eb8a13', 1), 53345678, 'Laura', 'Jimenez', 2664144244, 'laura.jimenez@mail.com'),
-(UUID_TO_BIN('0d6fd364-89c2-11f0-8e96-38eaa7eb8a13', 1), 54345678, 'Peolo', 'Fernández', 2664155255, 'paolo.fernandez@mail.com'),
-(UUID_TO_BIN('0d6fd88c-89c2-11f0-8e96-38eaa7eb8a13', 1), 55345678, 'Zoe', 'Becerra', 2664166266, 'zoe.becerra@mail.com'),
-(UUID_TO_BIN('0d6fde64-89c2-11f0-8e96-38eaa7eb8a13', 1), 56345678, 'Diego', 'Barzola', 2664177277, 'diego.barzola@mail.com'),
-(UUID_TO_BIN('0d6fe3ec-89c2-11f0-8e96-38eaa7eb8a13', 1), 57345678, 'Marina', 'Rosales', 2664188288, 'marina.rosales@mail.com'),
-(UUID_TO_BIN('0d6fe917-89c2-11f0-8e96-38eaa7eb8a13', 1), 58345678, 'Jose', 'Carrasco', 2664199299, 'jose.carrasco@mail.com'),
-(UUID_TO_BIN('0d6fc414-89c2-11f0-8e96-38eaa7eb8a13', 1), 59345678, 'Karen', 'Valverde', 2664100200, 'karen.valverde@mail.com');
+(21, 50345678, 'Ramiro', 'Lucero', 2664211211, 'ramiro.lucero@mail.com'),
+(22, 51345678, 'Juana', 'Aguirre', 2664122222, 'juana.aguirre@mail.com'),
+(23, 97345678, 'Abigail', 'Carranza', 2664133233, 'abigail.carranza@mail.com'),
+(24, 53345678, 'Laura', 'Jimenez', 2664144244, 'laura.jimenez@mail.com'),
+(25, 54345678, 'Peolo', 'Fernández', 2664155255, 'paolo.fernandez@mail.com'),
+(26, 55345678, 'Zoe', 'Becerra', 2664166266, 'zoe.becerra@mail.com'),
+(27, 56345678, 'Diego', 'Barzola', 2664177277, 'diego.barzola@mail.com'),
+(28, 57345678, 'Marina', 'Rosales', 2664188288, 'marina.rosales@mail.com'),
+(29, 58345678, 'Jose', 'Carrasco', 2664199299, 'jose.carrasco@mail.com'),
+(30, 59345678, 'Karen', 'Valverde', 2664100200, 'karen.valverde@mail.com');
 
-INSERT INTO inmuebles(id_propietario, direccion, tipo_de_uso, tipo, numero_de_cuartos, coordenadas, precio)
+INSERT INTO inmuebles(id, id_propietario, direccion, tipo_de_uso, tipo, numero_de_cuartos, coordenadas, precio)
 VALUES
-(UUID_TO_BIN('0d51f797-89c2-11f0-8e96-38eaa7eb8a13', 1), '9 de Julio', 'recidencial', 'casa', 4, 41.40338, 10000000),
-(UUID_TO_BIN('0d51b72a-89c2-11f0-8e96-38eaa7eb8a13', 1), 'Maipu', 'recidencial', 'casa', 3, 39.50362, 8000000),
-(UUID_TO_BIN('0d51cb94-89c2-11f0-8e96-38eaa7eb8a13', 1), 'Chacabuco', 'comercial', 'oficina', 2, 43.43530, 5000000),
-(UUID_TO_BIN('0d51d219-89c2-11f0-8e96-38eaa7eb8a13', 1), 'Belgrano', 'industrial', 'casa', 4, 51.04303, 9000000),
-(UUID_TO_BIN('0d51d7f5-89c2-11f0-8e96-38eaa7eb8a13', 1), 'Moreno', 'recidencial', 'casa', 5, 66.60366, 20000000),
-(UUID_TO_BIN('0d51dd0b-89c2-11f0-8e96-38eaa7eb8a13', 1), 'Dupuy', 'comercial', 'casa', 3, 23.23323, 9500000),
-(UUID_TO_BIN('0d51e24b-89c2-11f0-8e96-38eaa7eb8a13', 1), 'Sarmiento', 'recidencial', 'departamento', 4, 31.23202, 12500000),
-(UUID_TO_BIN('0d51e75c-89c2-11f0-8e96-38eaa7eb8a13', 1), '3 Venados', 'recidencial', 'casa', 2, 21.42321, 2000000),
-(UUID_TO_BIN('0d51ed94-89c2-11f0-8e96-38eaa7eb8a13', 1), 'Junin', 'comercial', 'oficina', 1, 22.70735, 1000000),
-(UUID_TO_BIN('0d51f2ea-89c2-11f0-8e96-38eaa7eb8a13', 1), '25 de Mayo', 'recidencial', 'casa', 7, 17.10378, 74000000);
+(31, 11, '9 de Julio', 'recidencial', 'casa', 4, 41.40338, 10000000),
+(32, 12, 'Maipu', 'recidencial', 'casa', 3, 39.50362, 8000000),
+(33, 13, 'Chacabuco', 'comercial', 'oficina', 2, 43.43530, 5000000),
+(34, 14, 'Belgrano', 'industrial', 'casa', 4, 51.04303, 9000000),
+(35, 15, 'Moreno', 'recidencial', 'casa', 5, 66.60366, 20000000),
+(36, 16, 'Dupuy', 'comercial', 'casa', 3, 23.23323, 9500000),
+(37, 17, 'Sarmiento', 'recidencial', 'departamento', 4, 31.23202, 12500000),
+(38, 18, '3 Venados', 'recidencial', 'casa', 2, 21.42321, 2000000),
+(39, 19, 'Junin', 'comercial', 'oficina', 1, 22.70735, 1000000),
+(40, 20, '25 de Mayo', 'recidencial', 'casa', 7, 17.10378, 74000000);
 
--- SELECT BIN_TO_UUID(id, 1) AS id FROM inquilinos;
+INSERT INTO contratos (
+    id, id_propietario, id_inquilino, id_inmueble,
+    dni_propietario_snapshot, dni_inquilino_snapshot, coordenadas_snapshot,
+    dia_de_inicio, dia_de_finalizacion, dia_de_cierre,
+    precio_mensual, dni_usuario_apertura, dni_usuario_cierre, estado
+) VALUES
+-- 📌 5 FINALIZADOS (cierre = finalización)
+(41, 11, 21, 31, 12345678, 50345678, 41.40338, '2020-01-01', '2021-01-01', '2021-01-01', 50000, 12345678, 22345678, 'finalizado'),
+(42, 12, 22, 32, 22345678, 51345678, 39.50362, '2020-05-01', '2021-05-01', '2021-05-01', 40000, 12345678, 22345678, 'finalizado'),
+(43, 13, 23, 33, 32345678, 97345678, 43.43530, '2019-02-01', '2020-02-01', '2020-02-01', 35000, 12345678, 22345678, 'finalizado'),
+(44, 14, 24, 34, 42345678, 53345678, 51.04303, '2018-03-01', '2019-03-01', '2019-03-01', 60000, 12345678, 22345678, 'finalizado'),
+(45, 15, 25, 35, 52345678, 54345678, 66.60366, '2017-04-01', '2018-04-01', '2018-04-01', 80000, 12345678, 22345678, 'finalizado'),
+-- 📌 5 CANCELADOS (cierre antes de finalización)
+(46, 16, 26, 36, 62345678, 55345678, 23.23323, '2021-01-01', '2023-01-01', '2022-06-01', 45000, 12345678, 22345678, 'cancelado'),
+(47, 17, 27, 37, 72345678, 56345678, 31.23202, '2021-02-01', '2024-02-01', '2022-12-01', 70000, 12345678, 22345678, 'cancelado'),
+(48, 18, 28, 38, 82345678, 57345678, 21.42321, '2020-06-01', '2022-06-01', '2021-12-01', 30000, 12345678, 22345678, 'cancelado'),
+(49, 19, 29, 39, 92345678, 58345678, 22.70735, '2020-07-01', '2023-07-01', '2021-11-01', 25000, 12345678, 22345678, 'cancelado'),
+(50, 20, 30, 40, 10345678, 59345678, 17.10378, '2021-08-01', '2023-08-01', '2022-01-01', 95000, 12345678, 22345678, 'cancelado'),
+-- 📌 5 PENDIENTES (fecha de inicio > Date.now())
+(51, 11, 30, 31, 12345678, 50345678, 41.40338, '2026-04-01', '2027-04-01', NULL, 50000, 12345678, NULL, 'pendiente'),
+(52, 12, 29, 32, 22345678, 51345678, 39.50362, '2026-07-01', '2027-10-01', NULL, 40000, 12345678, NULL, 'pendiente'),
+(53, 13, 28, 33, 32345678, 97345678, 43.43530, '2026-08-01', '2027-11-01', NULL, 35000, 12345678, NULL, 'pendiente'),
+(54, 14, 27, 34, 42345678, 53345678, 51.04303, '2026-09-01', '2026-12-01', NULL, 60000, 12345678, NULL, 'pendiente'),
+(55, 15, 26, 35, 52345678, 54345678, 66.60366, '2026-10-01', '2027-10-01', NULL, 80000, 12345678, NULL, 'pendiente'),
+-- 📌 10 VIGENTES (cierre NULL)
+(56, 11, 26, 31, 12345678, 50345678, 41.40338, '2022-01-01', '2025-01-01', NULL, 50000, 12345678, NULL, 'vigente'),
+(57, 12, 22, 32, 22345678, 51345678, 39.50362, '2023-02-01', '2026-02-01', NULL, 40000, 12345678, NULL, 'vigente'),
+(58, 13, 25, 33, 32345678, 97345678, 43.43530, '2021-03-01', '2024-03-01', NULL, 35000, 12345678, NULL, 'vigente'),
+(59, 14, 23, 34, 42345678, 53345678, 51.04303, '2022-04-01', '2025-04-01', NULL, 60000, 12345678, NULL, 'vigente'),
+(60, 15, 29, 35, 52345678, 54345678, 66.60366, '2023-05-01', '2026-05-01', NULL, 80000, 12345678, NULL, 'vigente'),
+(61, 16, 24, 36, 62345678, 55345678, 23.23323, '2021-06-01', '2024-06-01', NULL, 45000, 12345678, NULL, 'vigente'),
+(62, 17, 26, 37, 72345678, 56345678, 31.23202, '2022-07-01', '2025-07-01', NULL, 70000, 12345678, NULL, 'vigente'),
+(63, 18, 21, 38, 82345678, 57345678, 21.42321, '2023-08-01', '2026-08-01', NULL, 30000, 12345678, NULL, 'vigente'),
+(64, 19, 30, 39, 92345678, 58345678, 22.70735, '2022-09-01', '2025-09-01', NULL, 25000, 12345678, NULL, 'vigente'),
+(65, 20, 21, 40, 10345678, 59345678, 17.10378, '2021-10-01', '2024-10-01', NULL, 95000, 12345678, NULL, 'vigente');

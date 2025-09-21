@@ -119,21 +119,26 @@ public class ContratoController(IRepository<Contrato> Repository) : Controller
 
   [HttpPost]
   [ValidateAntiForgeryToken]
-  public IActionResult EditState(Guid Id, int DniUsuarioCierre, string Estado)
+  public IActionResult EditState(int Id, int DniUsuarioCierre)
   {
-    var element = _userRepository.ReadOne(("id", Id)).Entity;
+    Dictionary<string, object> filter = new() { { "@value", Id } };
+    string query = $"SELECT a.*, b.nombre AS nombre_propietario, c.nombre AS nombre_inquilino, b.apellido AS apellido_propietario, c.apellido AS apellido_inquilino, d.direccion AS direccion FROM contratos AS a INNER JOIN propietarios AS b ON a.id_propietario = b.id INNER JOIN inquilinos AS c ON a.id_inquilino = c.id INNER JOIN inmuebles AS d ON a.id_inmueble = d.id WHERE a.id = @value;";
 
+    var element = _userRepository.CustomQuery(query, filter).FirstOrDefault();
+
+    Console.WriteLine("Consulta en proceso...");
     if (element == null) return NotFound(new { Success = false, Message = "Item not found." });
 
     Dictionary<string, object> newData = new()
     {
       { "dni_usuario_cierre", DniUsuarioCierre },
-      { "estado", Estado },
+      { "estado", "cancelado" },
+      { "dia_de_cierre", DateTime.Now },
       { "id", Id }
     };
     int affectedRows = _userRepository.Update(newData);
     Console.WriteLine($"Rows affected: {affectedRows}");
 
-    return Ok(new { Success = true, State = element.Estado });
+    return Ok(new { Success = true, Body = DateTime.Now });
   }
 }

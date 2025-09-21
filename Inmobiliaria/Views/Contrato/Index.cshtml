@@ -5,6 +5,8 @@
 }
 
 <div class="container-fluid text-center d-flex gap-2">
+  @* Modal de edicion de estado *@
+  @await Html.PartialAsync("_EditStateModal")
   @* Modal de informacion y edicion *@
   @await Html.PartialAsync("_ViewInfoModal")
 
@@ -102,8 +104,11 @@
   <script type="module">
     // ELEMENTS MODAL
     const $modal_info = document.querySelector('#viewInfoModal');
-    const $modal_btn_edit = $modal_info.querySelector('.moda-btn-edit');
-    const $modal_btn_send = $modal_info.querySelector('.moda-btn-send');
+    const $modal_state = document.querySelector('#editStateModal');
+    const $modal_btn_edit = $modal_info.querySelector('.modal-btn-edit');
+    const $modal_btn_send = $modal_info.querySelector('.modal-btn-send');
+    const $modal_btn_state = $modal_info.querySelector('.modal-btn-state');
+    const $modal_state_btn = document.querySelector('#confirm-state');
     // STRUCTURES
     const $list = document.querySelector('.list');
     const $table = document.querySelector('#body-table');
@@ -179,8 +184,10 @@
       });
 
       $modal_btn_edit.style.display = (flag) ? 'block' : 'none';
+      $modal_btn_state.style.display = (flag) ? 'block' : 'none';
       $modal_btn_edit.setAttribute('data-id', idContract);
       $modal_btn_send.setAttribute('data-id', idContract);
+      $modal_btn_state.setAttribute('data-id', idContract);
     });
 
     $modal_btn_edit.addEventListener('click', buttonHandler);
@@ -230,6 +237,56 @@
 
         buttonHandler(element);
       } catch (err) {
+        console.error('Failed update ' + err.message);
+
+        alert('Failed update');
+      }
+    });
+
+    $modal_btn_state.addEventListener('click', function () {
+      const $h3 = $modal_state.querySelector('h3');
+      const idContract = this.getAttribute('data-id');
+
+      const element = USER_CONTRACTS.find(el => +el.id === +idContract);
+
+      $h3.textContent = `Esta por cancelar el contrato entre ${element.nombrePropietario} ${element.apellidoPropietario} y ${element.nombreInquilino} ${element.apellidoInquilino}.`;
+
+      $modal_state_btn.setAttribute('data-id', idContract);
+    });
+
+    $modal_state_btn.addEventListener('click', async function (evt) {
+      const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+      const idContract = this.getAttribute('data-id');
+
+      try {
+        const response = await fetch(`/Contrato/EditState?Id=${idContract}&DniUsuarioCierre=87654321`, {
+          method: 'POST',
+          headers: {
+            'RequestVerificationToken': token
+          }
+        });
+
+        if (!response.ok) throw new Error('Response 404');
+
+        const { body } = await response.json();
+        const contractEdit = USER_CONTRACTS.find(el => +el.id === +idContract);
+
+        contractEdit.dniUsuarioCierre = '87654321';
+        contractEdit.diaDeCierre = formatDate(body);
+        contractEdit.estado = 'cancelado';
+
+        USER_CONTRACTS.map(el => {
+          return (el.id === contractEdit.id) ? contractEdit : el;
+        });
+
+        buildList(USER_CONTRACTS);
+
+        console.log('Successful update');
+
+        bootstrap.Modal.getInstance($modal_state).hide();
+      } catch (err) {
+        bootstrap.Modal.getInstance($modal_state)?.hide();
+
         console.error('Failed update ' + err.message);
 
         alert('Failed update');
@@ -389,7 +446,7 @@
 
     function buttonHandler(prop) {
       $modal_info.querySelector('.msj-error').textContent = '';
-      
+
       const $inputs = $modal_info.querySelectorAll('input');
       const idContract = $modal_btn_edit.getAttribute('data-id');
       const element = (!prop?.isTrusted)
